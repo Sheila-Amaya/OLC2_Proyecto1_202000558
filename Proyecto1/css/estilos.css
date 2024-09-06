@@ -1,0 +1,42 @@
+body.bg-dark {
+    background-color: #121212 !important; /* Fondo oscuro para toda la página */
+}
+
+.bg-secondary {
+    background-color: #343a40 !important; /* Fondo oscuro más claro para la barra lateral */
+    height: 732px;
+}
+
+#editor {
+    background-color: #212529; /* Fondo oscuro para el editor */
+    color: #f8f9fa; /* Texto claro */
+    height: 50vh; /* Altura del editor */
+    width: 100%; /* Ancho del editor */
+}
+
+#console {
+    background-color: #212529; /* Fondo oscuro para la consola */
+    color: #f8f9fa; /* Texto claro */
+    height: 42vh; /* Altura de la consola */
+    width: 100%; /* Ancho de la consola */
+    overflow-y: auto; /* Habilitar scroll si el contenido excede la altura */
+    margin-top: 10px; /* Espaciado superior */
+    padding: 10px; /* Espaciado interno */
+}
+
+.dropdown-item {
+    color: #f8f9fa !important;
+}
+
+.close-button {
+    margin-left: 10px;
+    background-color: transparent;
+    border: none;
+    color: red;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.close-button:hover {
+    color: darkred;
+}

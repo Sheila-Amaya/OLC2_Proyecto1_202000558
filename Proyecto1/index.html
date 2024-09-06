@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OakLand Editor</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body class="bg-dark text-light">
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 col-12 p-3 bg-secondary"> <!-- Barra lateral fija -->
+                <div class="dropdown mb-3">
+                    <button class="btn btn-dark dropdown-toggle w-100" type="button" id="archivoDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Archivo
+                    </button>
+                    <div class="dropdown-menu bg-dark w-100" aria-labelledby="archivoDropdown">
+                        <button class="dropdown-item text-light bg-dark" onclick="createFile()">Nuevo Archivo</button>
+                        <button class="dropdown-item text-light bg-dark" onclick="document.getElementById('fileInput').click()">Abrir Archivo</button>
+                        <input id="fileInput" type="file" accept=".oak" onchange="openFile(event)" multiple style="display: none;">
+                        <button class="dropdown-item text-light bg-dark" onclick="saveFile()">Guardar Archivo</button>
+                    </div>
+                </div>
+                <button class="btn btn-primary w-100 mb-3" onclick="executeCode()">Ejecutar</button>
+                <div class="dropdown mb-3">
+                    <button class="btn btn-dark dropdown-toggle w-100" type="button" id="reportesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Reportes
+                    </button>
+                    <div class="dropdown-menu bg-dark w-100" aria-labelledby="reportesDropdown">
+                        <button class="dropdown-item text-light bg-dark" onclick="generateErrorReport()">Reporte de Errores</button>
+                        <button class="dropdown-item text-light bg-dark" onclick="generateSymbolTableReport()">Tabla de Símbolos</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-10 col-12 p-3">
+                <div id="tabContainer" class="nav nav-tabs">
+                    <!-- Las pestañas se agregarán aquí -->
+                </div>
+                <div id="editor" class="border bg-dark text-light"></div>
+                <div id="console" class="border bg-dark text-light mt-3 p-2"> </div> <!-- Consola -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="UI/index.js"></script>
+</body>
+</html>
