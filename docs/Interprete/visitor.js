@@ -1,58 +1,58 @@
 
 /**
 
- * @typedef {import('./nodos').Expresion} Expresion
+ * @typedef {import('./docs/Interprete/nodos.js').Expresion} Expresion
 
 
- * @typedef {import('./nodos').OperacionBinaria} OperacionBinaria
+ * @typedef {import('./docs/Interprete/nodos.js').OperacionBinaria} OperacionBinaria
 
 
- * @typedef {import('./nodos').OperacionUnaria} OperacionUnaria
+ * @typedef {import('./docs/Interprete/nodos.js').OperacionUnaria} OperacionUnaria
 
 
- * @typedef {import('./nodos').Agrupacion} Agrupacion
+ * @typedef {import('./docs/Interprete/nodos.js').Agrupacion} Agrupacion
 
 
- * @typedef {import('./nodos').Numero} Numero
+ * @typedef {import('./docs/Interprete/nodos.js').Numero} Numero
 
 
- * @typedef {import('./nodos').DeclaracionVariable} DeclaracionVariable
+ * @typedef {import('./docs/Interprete/nodos.js').DeclaracionVariable} DeclaracionVariable
 
 
- * @typedef {import('./nodos').ReferenciaVariable} ReferenciaVariable
+ * @typedef {import('./docs/Interprete/nodos.js').ReferenciaVariable} ReferenciaVariable
 
 
- * @typedef {import('./nodos').Print} Print
+ * @typedef {import('./docs/Interprete/nodos.js').Print} Print
 
 
- * @typedef {import('./nodos').ExpresionStmt} ExpresionStmt
+ * @typedef {import('./docs/Interprete/nodos.js').ExpresionStmt} ExpresionStmt
 
 
- * @typedef {import('./nodos').Asignacion} Asignacion
+ * @typedef {import('./docs/Interprete/nodos.js').Asignacion} Asignacion
 
 
- * @typedef {import('./nodos').Bloque} Bloque
+ * @typedef {import('./docs/Interprete/nodos.js').Bloque} Bloque
 
 
- * @typedef {import('./nodos').If} If
+ * @typedef {import('./docs/Interprete/nodos.js').If} If
 
 
- * @typedef {import('./nodos').While} While
+ * @typedef {import('./docs/Interprete/nodos.js').While} While
 
 
- * @typedef {import('./nodos').For} For
+ * @typedef {import('./docs/Interprete/nodos.js').For} For
 
 
- * @typedef {import('./nodos').Break} Break
+ * @typedef {import('./docs/Interprete/nodos.js').Break} Break
 
 
- * @typedef {import('./nodos').Continue} Continue
+ * @typedef {import('./docs/Interprete/nodos.js').Continue} Continue
 
 
- * @typedef {import('./nodos').Return} Return
+ * @typedef {import('./docs/Interprete/nodos.js').Return} Return
 
 
- * @typedef {import('./nodos').Llamada} Llamada
+ * @typedef {import('./docs/Interprete/nodos.js').Llamada} Llamada
 
  */
 

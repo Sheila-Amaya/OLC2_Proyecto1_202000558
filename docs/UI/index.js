@@ -133,15 +133,22 @@ function executeCode() {
         try {
             const sentencias = parse(codigoFuente);
             const interprete = new InterpreterVisitor();
-            sentencias.forEach(sentencia => sentencia.accept(interprete));
+            sentencias.forEach(sentencia => {
+                try {
+                    sentencia.accept(interprete);
+                } catch (error) {
+                    logToConsole(`Error: ${error.message} at line ${error.location?.start.line} column ${error.location?.start.column}`);
+                }
+            });
             logToConsole(interprete.salida);
         } catch (error) {
-            logToConsole(`Error: ${error.message} at line ${error.location.start.line} column ${error.location.start.column}`);
+            logToConsole(`Error: ${error.message} at line ${error.location?.start.line} column ${error.location?.start.column}`);
         }
     } else {
         alert("No hay ningún archivo abierto para ejecutar.");
     }
 }
+
 
 // Funcionalidad para limpiar la consola
 function clearConsole() {
@@ -162,7 +169,7 @@ function generateSymbolTableReport() {
 // Funcionalidad para logear mensajes a la consola
 function logToConsole(message) {
     const consoleElement = document.getElementById('console');
-    consoleElement.innerHTML += `${message}\n`;
+    consoleElement.innerHTML += `${message.replace(/\n/g, '<br/>')}`;
 }
 
 // Inicializar el editor vacío al cargar la página

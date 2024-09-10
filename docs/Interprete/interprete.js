@@ -4,6 +4,7 @@ import nodos, { Expresion } from './nodos.js'
 import { BreakException, ContinueException, ReturnException } from "../Interprete/transferencia.js";
 import { Invocable } from "../Interprete/invocable.js";
 import { embebidas } from "../Entorno/embebidas.js";
+import { obtenerTipo } from "../Utilidades/utils.js";
 
 
 export class InterpreterVisitor extends BaseVisitor {
@@ -89,11 +90,34 @@ export class InterpreterVisitor extends BaseVisitor {
      */
     visitDeclaracionVariable(node) {
         const nombreVariable = node.id;
-        const valorVariable = node.exp.accept(this);
-
-        this.entornoActual.setVariable(nombreVariable, valorVariable);
+        const tipoDefinido = node.tipo; // Tipo def como 'var'
+        let valorInicial = node.exp ? node.exp.accept(this) : null;
+    
+        // valor inicial para 'var'
+        if (tipoDefinido === 'var') {
+            if (valorInicial === null) {
+                throw new Error(" Declaracion con 'var' requiere un valor inicial para inferir el tipo.");
+            }
+            // Inferir el tipo desde el valor inicial
+            const tipoInferido = obtenerTipo(valorInicial);
+            node.tipo = tipoInferido; // Actualiza el nodo con el tipo inferido
+            console.log(`Tipo inferido para variable '${nombreVariable}': ${tipoInferido}`);
+        } else {
+            // Validación del tipo definido 
+            if (valorInicial !== null) {
+                const tipoValor = obtenerTipo(valorInicial);
+                if (tipoDefinido !== tipoValor && !(tipoDefinido === 'float' && tipoValor === 'int')) {
+                    valorInicial = null;  // Asignar null si el tipo es incompatible
+                    console.log(` Tipo incompatible. Se esperaba '${tipoDefinido}', pero se recibio '${tipoValor}'.`);
+                } else if (tipoDefinido === 'float' && tipoValor === 'int') {
+                    valorInicial = parseFloat(valorInicial); // Conversión implícita de int a float
+                }
+            }
+        }
+    
+        this.entornoActual.setVariable(nombreVariable, valorInicial);
+        console.log(`Variable '${nombreVariable}' declarada con valor ${valorInicial} y tipo ${node.tipo}`);
     }
-
 
     /**
       * @type {BaseVisitor['visitReferenciaVariable']}
@@ -109,7 +133,7 @@ export class InterpreterVisitor extends BaseVisitor {
       */
     visitPrint(node) {
         const valor = node.exp.accept(this);
-        this.salida += valor + '\n';
+        this.salida += `${valor}\n`;
     }
 
 

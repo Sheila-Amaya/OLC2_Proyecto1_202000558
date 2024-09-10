@@ -15,23 +15,25 @@ export class Entorno {
      * @param {any} valor
      */
     setVariable(nombre, valor) {
-        // TODO: si algo ya está definido, lanzar error
+        if (this.valores.hasOwnProperty(nombre)) {
+            throw new Error(`Variable '${nombre}' ya definida en este entorno.`);
+        }
         this.valores[nombre] = valor;
     }
+
+    
 
     /**
      * @param {string} nombre
      */
     getVariable(nombre) {
-        const valorActual = this.valores[nombre];
-
-        if (valorActual !== undefined) return valorActual;
-
-        if (!valorActual && this.padre) {
+        if (this.valores.hasOwnProperty(nombre)) {
+            return this.valores[nombre];
+        } else if (this.padre) {
             return this.padre.getVariable(nombre);
+        } else {
+            throw new Error(`Variable '${nombre}' no definida.`);
         }
-
-        throw new Error(`Variable ${nombre} no definida`);
     }
 
     /**
@@ -39,18 +41,14 @@ export class Entorno {
    * @param {any} valor
    */
     assignVariable(nombre, valor) {
-        const valorActual = this.valores[nombre];
-
-        if (valorActual !== undefined) {
+        if (this.valores.hasOwnProperty(nombre)) {
             this.valores[nombre] = valor;
             return;
-        }
-
-        if (!valorActual && this.padre) {
+        } else if (this.padre) {
+            // Si no está en el entorno actual, intenta asignar en el entorno padre
             this.padre.assignVariable(nombre, valor);
-            return;
+        } else {
+            throw new Error(`Variable '${nombre}' no definida.`);
         }
-
-        throw new Error(`Variable ${nombre} no definida`);
     }
 }

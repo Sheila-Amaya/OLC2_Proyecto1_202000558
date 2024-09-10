@@ -13,7 +13,7 @@
     
 
 /**
- * @typedef {import('./visitor').BaseVisitor} BaseVisitor
+ * @typedef {import('./docs/Interprete/visitor.js').BaseVisitor} BaseVisitor
  */
 
 export class Expresion  {
@@ -169,12 +169,20 @@ export class DeclaracionVariable extends Expresion {
 
     /**
     * @param {Object} options
-    * @param {string} options.id Identificador de la variable
+    * @param {string} options.tipo Tipo de la variable
+ * @param {string} options.id Identificador de la variable
  * @param {Expresion} options.exp Expresion de la variable
     */
-    constructor({ id, exp }) {
+    constructor({ tipo, id, exp }) {
         super();
         
+        /**
+         * Tipo de la variable
+         * @type {string}
+        */
+        this.tipo = tipo;
+
+
         /**
          * Identificador de la variable
          * @type {string}
