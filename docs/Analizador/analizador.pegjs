@@ -84,7 +84,7 @@ ForInit
 
 // ===== Palabras reservadas =====
 Reserved 
-  = "true" / "false"/"int" / "float" / "string" / "bool" / "char" / "var" / "if" / "else" / "while" / "for" 
+  = "true" / "false" /"int" / "float" / "string" / "bool" / "char" / "var" / "if" / "else" / "while" / "for" 
   / "break" / "continue" / "return" / "null"
 
 // ===== Identificadores validos ===== 
@@ -182,7 +182,7 @@ Num_entero
 
 // ===== Números decimales =====
 Num_decimal 
-  = [0-9]+ ("." [0-9]+) { return crearNodo('numero', { tipo: 'float', valor: parseFloat(text(), 10) });  }
+  = [0-9]+ ("." [0-9]+) { return crearNodo('numero', { tipo: 'float', valor: parseFloat(text()) });  }
 
 // ===== Literales Booleanos =====
 Booleano

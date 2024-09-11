@@ -5,6 +5,7 @@ import { BreakException, ContinueException, ReturnException } from "../Interpret
 import { Invocable } from "../Interprete/invocable.js";
 import { embebidas } from "../Entorno/embebidas.js";
 import { obtenerTipo } from "../Util/utils.js";
+import { Aritmeticas } from "../Expression/aritmeticas.js";
 
 export class InterpreterVisitor extends BaseVisitor {
 
@@ -36,30 +37,56 @@ export class InterpreterVisitor extends BaseVisitor {
     visitOperacionBinaria(node) {
         const izq = node.izq.accept(this);
         const der = node.der.accept(this);
-
+    
         if (izq === null || der === null) {
-            console.error(`operacion con null detectada en '${node.op}'`);
+            console.error(`Operacion con null detectada en '${node.op}'`);
             return null;
         }
-
+    
         switch (node.op) {
             case '+':
-                return izq + der;
+                const resultadoSuma = Aritmeticas.suma(izq, der);
+                if (resultadoSuma.tipo) {
+                    node.tipo = resultadoSuma.tipo; // Actualiza el tipo del nodo 
+                }
+                return resultadoSuma.valor;
             case '-':
-                return izq - der;
+                const resultadoResta = Aritmeticas.resta(izq, der);
+                if (resultadoResta.tipo) {
+                    node.tipo = resultadoResta.tipo; 
+                }
+                return resultadoResta.valor;
             case '*':
-                return izq * der;
+                const resultadoMultiplicacion = Aritmeticas.multiplicacion(izq, der);
+                if (resultadoMultiplicacion.tipo) {
+                    node.tipo = resultadoMultiplicacion.tipo;
+                }
+                return resultadoMultiplicacion.valor;
             case '/':
                 if (der === 0) throw new Error('division por cero');
-                return izq / der;
+                
+                const resultadoDivision = Aritmeticas.division(izq, der);
+                if (resultadoDivision.tipo) {
+                    node.tipo = resultadoDivision.tipo; 
+                }
+                return resultadoDivision.valor;
+
+            case '%':
+                const resultadoModulo = Aritmeticas.modulo(izq, der);
+                if (resultadoModulo.tipo) {
+                    node.tipo = resultadoModulo.tipo; // Actualiza el tipo del nodo si es necesario
+                }
+                return resultadoModulo.valor;
+
             case '<=':
-                return izq <= der;
+                    return izq <= der;
             case '==':
-                return izq === der;
+                    return izq === der;
             default:
-                throw new Error(`operador no soportado: ${node.op}`);
+                throw new Error(`Operador no soportado: ${node.op}`);
         }
     }
+
 
     /**
       * @type {BaseVisitor['visitOperacionUnaria']}

@@ -7,7 +7,7 @@
 
 export function obtenerTipo(valor) {
     if (typeof valor === 'number') {
-        return Number.isInteger(valor) ? 'int' : 'float';
+        return Number.isInteger(valor) && valor % 1 !== 0 ? 'float' : 'int';
     } else if (typeof valor === 'boolean') {
         return 'bool';
     } else if (typeof valor === 'string') {
