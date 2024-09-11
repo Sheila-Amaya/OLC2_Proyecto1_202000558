@@ -1,12 +1,11 @@
-
-
 export class Entorno {
 
     /**
-        * @param {Entorno} padre
-     */
+    * @param {Entorno} padre
+    */
     constructor(padre = undefined) {
         this.valores = {};
+        this.tipos = {};
         this.padre = padre;
     }
 
@@ -14,14 +13,13 @@ export class Entorno {
      * @param {string} nombre
      * @param {any} valor
      */
-    setVariable(nombre, valor) {
+    setVariable(nombre, valor, tipo) {
         if (this.valores.hasOwnProperty(nombre)) {
             throw new Error(`Variable '${nombre}' ya definida en este entorno.`);
         }
         this.valores[nombre] = valor;
+        this.tipos[nombre] = tipo;
     }
-
-    
 
     /**
      * @param {string} nombre
@@ -36,6 +34,22 @@ export class Entorno {
         }
     }
 
+
+    /**
+   * @param {string} nombre
+   * @returns {string} Tipo de la variable
+   * @throws {Error} Si la variable no está definida
+   * */
+    getTipoVariable(nombre) {
+        if (this.tipos.hasOwnProperty(nombre)) {
+            return this.tipos[nombre];
+        }
+        if (this.padre) {
+            return this.padre.getTipoVariable(nombre);
+        }
+        throw new Error(`La variable '${nombre}' no está definida.`);
+    }
+
     /**
    * @param {string} nombre
    * @param {any} valor
@@ -45,10 +59,29 @@ export class Entorno {
             this.valores[nombre] = valor;
             return;
         } else if (this.padre) {
-            // Si no está en el entorno actual, intenta asignar en el entorno padre
             this.padre.assignVariable(nombre, valor);
         } else {
             throw new Error(`Variable '${nombre}' no definida.`);
         }
     }
+
+    existeVariable(nombre) {
+        if (this.valores.hasOwnProperty(nombre)) {
+            return true;
+        }
+        if (this.padre) {
+            return this.padre.existeVariable(nombre);
+        }
+        return false;
+    }
+
+    /**
+    * Verifica si la variable existe en el entorno actual, no en los padres
+    * @param {string} nombre
+    * @returns {boolean} true si la variable existe en el entorno actual
+    */
+    existeVariableLocal(nombre) {
+        return this.valores.hasOwnProperty(nombre);
+    }
+
 }

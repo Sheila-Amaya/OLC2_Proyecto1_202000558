@@ -2,6 +2,15 @@ import * as monaco from 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/+esm'
 import { parse } from '../Analizador/analizador.js';
 import { InterpreterVisitor } from '../Interprete/interprete.js';
 
+window.MonacoEnvironment = {
+    getWorkerUrl: function(workerId, label) {
+        return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
+            self.MonacoEnvironment = { baseUrl: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/min/' };
+            importScripts('https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/min/vs/base/worker/workerMain.js');
+        `)}`;
+    }
+};
+
 let editors = {}; // Para almacenar múltiples editores
 let currentTabId = 0;
 let activeTabId = null;

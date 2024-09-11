@@ -144,11 +144,19 @@ export class Numero extends Expresion {
 
     /**
     * @param {Object} options
-    * @param {number} options.valor Valor del numero
+    * @param {string} options.tipo Tipo del numero
+ * @param {number} options.valor Valor del numero
     */
-    constructor({ valor }) {
+    constructor({ tipo, valor }) {
         super();
         
+        /**
+         * Tipo del numero
+         * @type {string}
+        */
+        this.tipo = tipo;
+
+
         /**
          * Valor del numero
          * @type {number}
@@ -162,6 +170,105 @@ export class Numero extends Expresion {
      */
     accept(visitor) {
         return visitor.visitNumero(this);
+    }
+}
+    
+export class Booleano extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {string} options.tipo Tipo del booleano
+ * @param {bool} options.valor Valor del booleano
+    */
+    constructor({ tipo, valor }) {
+        super();
+        
+        /**
+         * Tipo del booleano
+         * @type {string}
+        */
+        this.tipo = tipo;
+
+
+        /**
+         * Valor del booleano
+         * @type {bool}
+        */
+        this.valor = valor;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitBooleano(this);
+    }
+}
+    
+export class String extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {string} options.tipo Tipo de la cadena
+ * @param {string} options.valor Valor de la cadena
+    */
+    constructor({ tipo, valor }) {
+        super();
+        
+        /**
+         * Tipo de la cadena
+         * @type {string}
+        */
+        this.tipo = tipo;
+
+
+        /**
+         * Valor de la cadena
+         * @type {string}
+        */
+        this.valor = valor;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitString(this);
+    }
+}
+    
+export class Char extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {string} options.tipo Tipo del char
+ * @param {string} options.valor Valor del char
+    */
+    constructor({ tipo, valor }) {
+        super();
+        
+        /**
+         * Tipo del char
+         * @type {string}
+        */
+        this.tipo = tipo;
+
+
+        /**
+         * Valor del char
+         * @type {string}
+        */
+        this.valor = valor;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitChar(this);
     }
 }
     
@@ -558,4 +665,4 @@ export class Llamada extends Expresion {
     }
 }
     
-export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, DeclaracionVariable, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Bloque, If, While, For, Break, Continue, Return, Llamada }
+export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, DeclaracionVariable, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Bloque, If, While, For, Break, Continue, Return, Llamada }

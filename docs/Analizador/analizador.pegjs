@@ -1,3 +1,4 @@
+
 {
   const crearNodo = (tipoNodo, props) => {
     const tipos = {
@@ -17,7 +18,10 @@
       'break': nodos.Break,
       'continue': nodos.Continue,
       'return': nodos.Return,
-      'llamada': nodos.Llamada
+      'llamada': nodos.Llamada,
+      'bool': nodos.Booleano,
+      'string': nodos.String,
+      'char': nodos.Char
     };
 
     const nodo = new tipos[tipoNodo](props);
@@ -37,12 +41,8 @@ Declaracion
 
 // ===== Declaración de variables =====
 VarDcl 
-  = tipo:Type _ id:Identificador _ "=" _ exp:Expresion _ ";" { 
-      return crearNodo('declaracionVariable', { tipo, id, exp }); 
-    }
-  / tipo:Type _ id:Identificador _ ";" { 
-      return crearNodo('declaracionVariable', { tipo, id, exp: null }); 
-    }
+  = tipo:Type _ id:Identificador _ "=" _ exp:Expresion _ ";" { return crearNodo('declaracionVariable', { tipo, id, exp }); }
+  / tipo:Type _ id:Identificador _ ";"                       { return crearNodo('declaracionVariable', { tipo, id, exp: null }); }
 
 // ===== Sentencias =====
 Stmt 
@@ -83,14 +83,12 @@ ForInit
 
 // ===== Palabras reservadas =====
 Reserved 
-  = "int" / "float" / "string" / "boolean" / "char" / "var" / "if" / "else" / "while" / "for" / "break" / "continue" / "return"
+  = "true" / "false"/"int" / "float" / "string" / "bool" / "char" / "var" / "if" / "else" / "while" / "for" 
+  / "break" / "continue" / "return" 
 
-// ===== Identificadores validos =====
+// ===== Identificadores validos ===== -
 Identificador 
-  = inicial:[a-zA-Z_] resto:[a-zA-Z0-9_]* !Reserved { 
-      return text(); 
-    }
-
+  = !Reserved [a-zA-Z_][a-zA-Z0-9_]* { return text(); } 
 
 // ===== Expresiones =====
 Expresion 
@@ -98,9 +96,7 @@ Expresion
 
 // ===== Asignación =====
 Asignacion 
-  = id:Identificador _ "=" _ asgn:Asignacion { 
-      return crearNodo('asignacion', { id, asgn }); 
-    }
+  = id:Identificador _ "=" _ asgn:Asignacion { return crearNodo('asignacion', { id, asgn }); }
   / Comparacion
 
 // ===== Comparaciones =====
@@ -141,10 +137,18 @@ Multiplicacion
 
 // ===== Operaciones Unarias =====
 Unaria 
-  = "-" _ num:Unaria { 
-      return crearNodo('unaria', { op: '-', exp: num }); 
+  = "-" _ exp:Unaria { 
+      return crearNodo('unaria', { op: '-', exp: exp }); 
     }
+  / Literal // Asegura que `Literal` incluya todas las posibles expresiones primitivas
   / Llamada
+
+// ===== Literales =====
+Literal
+  = Numero
+  / Booleano
+  / String
+  / Char
 
 // ===== Llamadas a funciones =====
 Llamada 
@@ -165,21 +169,50 @@ Argumentos
 
 // ===== Números, agrupaciones y referencias a variables =====
 Numero 
-  = [0-9]+("." [0-9]+)? { 
-      return crearNodo('numero', { valor: parseFloat(text(), 10) }); 
+  = Num_decimal 
+  / Num_entero
+  / "(" _ exp:Expresion _ ")" {  return crearNodo('agrupacion', { exp });  }
+  / id:Identificador          {  return crearNodo('referenciaVariable', { id }); }
+
+// ===== Números enteros =====
+Num_entero 
+  = [0-9]+ { return crearNodo('numero', { tipo: 'int', valor: parseInt(text(), 10) }); }
+
+// ===== Números decimales =====
+Num_decimal 
+  = [0-9]+ ("." [0-9]+) { return crearNodo('numero', { tipo: 'float', valor: parseFloat(text(), 10) });  }
+
+// ===== Literales Booleanos =====
+Booleano
+  = "true"  { return crearNodo('bool', { tipo: 'bool', valor: true }); }
+  / "false" { return crearNodo('bool', { tipo: 'bool', valor: false }); }
+
+
+// ===== Literales String =====
+String
+  = '"' chars:(([^"\\] / EscapeSequence)*) '"' { 
+      return crearNodo('string', { tipo: 'string', valor: chars.join("") }); 
     }
-  / "(" _ exp:Expresion _ ")" { 
-      return crearNodo('agrupacion', { exp }); 
+
+EscapeSequence
+  = "\\" ch:("\"" / "\\" / "n" / "r" / "t") { 
+      switch(ch) {
+          case '"': return '"';
+          case '\\': return '\\';
+          case 'n': return '\n';
+          case 'r': return '\r';
+          case 't': return '\t';
+      }
     }
-  / id:Identificador { 
-      return crearNodo('referenciaVariable', { id }); 
-    }
+
+// ===== Literales Char =====
+Char
+  = "'" char:. "'" { return crearNodo('char', { tipo: 'char', valor: char }); }
+
 
 // ===== Tipos de datos permitidos =====
 Type 
-  = "int" / "float" / "string" / "boolean" / "char" / "var" { 
-      return text(); 
-    }
+  = "int" / "float" / "string" / "bool" / "char"/ "var" {  return text();  }
 
 // ===== Espacios en blanco y comentarios =====
 _ 

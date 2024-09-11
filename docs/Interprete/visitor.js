@@ -16,6 +16,15 @@
  * @typedef {import('./docs/Interprete/nodos.js').Numero} Numero
 
 
+ * @typedef {import('./docs/Interprete/nodos.js').Booleano} Booleano
+
+
+ * @typedef {import('./docs/Interprete/nodos.js').String} String
+
+
+ * @typedef {import('./docs/Interprete/nodos.js').Char} Char
+
+
  * @typedef {import('./docs/Interprete/nodos.js').DeclaracionVariable} DeclaracionVariable
 
 
@@ -106,6 +115,33 @@ export class BaseVisitor {
      */
     visitNumero(node) {
         throw new Error('Metodo visitNumero no implementado');
+    }
+    
+
+    /**
+     * @param {Booleano} node
+     * @returns {any}
+     */
+    visitBooleano(node) {
+        throw new Error('Metodo visitBooleano no implementado');
+    }
+    
+
+    /**
+     * @param {String} node
+     * @returns {any}
+     */
+    visitString(node) {
+        throw new Error('Metodo visitString no implementado');
+    }
+    
+
+    /**
+     * @param {Char} node
+     * @returns {any}
+     */
+    visitChar(node) {
+        throw new Error('Metodo visitChar no implementado');
     }
     
 
