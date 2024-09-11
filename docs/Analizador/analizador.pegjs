@@ -21,7 +21,8 @@
       'llamada': nodos.Llamada,
       'bool': nodos.Booleano,
       'string': nodos.String,
-      'char': nodos.Char
+      'char': nodos.Char,
+      'null': nodos.Null
     };
 
     const nodo = new tipos[tipoNodo](props);
@@ -37,7 +38,7 @@ programa = _ dcl:Declaracion* _ { return dcl }
 // ===== Declaraciones =====
 Declaracion 
   = dcl:VarDcl _ { return dcl }
-  / stmt:Stmt _ { return stmt }
+  / stmt:Stmt _  { return stmt }
 
 // ===== Declaración de variables =====
 VarDcl 
@@ -84,9 +85,9 @@ ForInit
 // ===== Palabras reservadas =====
 Reserved 
   = "true" / "false"/"int" / "float" / "string" / "bool" / "char" / "var" / "if" / "else" / "while" / "for" 
-  / "break" / "continue" / "return" 
+  / "break" / "continue" / "return" / "null"
 
-// ===== Identificadores validos ===== -
+// ===== Identificadores validos ===== 
 Identificador 
   = !Reserved [a-zA-Z_][a-zA-Z0-9_]* { return text(); } 
 
@@ -94,7 +95,7 @@ Identificador
 Expresion 
   = Asignacion
 
-// ===== Asignación =====
+// ===== Asignacion =====
 Asignacion 
   = id:Identificador _ "=" _ asgn:Asignacion { return crearNodo('asignacion', { id, asgn }); }
   / Comparacion
@@ -123,7 +124,7 @@ Suma
       );
     }
 
-// ===== Operaciones de Multiplicación, División y Módulo =====
+// ===== Operaciones de Multiplicacion, Division y Modulo =====
 Multiplicacion 
   = izq:Unaria expansion:(_ op:("*" / "/" / "%") _ der:Unaria { return { tipo: op, der }; })* {
       return expansion.reduce(
@@ -135,12 +136,12 @@ Multiplicacion
       );
     }
 
-// ===== Operaciones Unarias =====
+// ===== negacion Unaria  =====
 Unaria 
   = "-" _ exp:Unaria { 
       return crearNodo('unaria', { op: '-', exp: exp }); 
     }
-  / Literal // Asegura que `Literal` incluya todas las posibles expresiones primitivas
+  / Literal
   / Llamada
 
 // ===== Literales =====
@@ -149,6 +150,7 @@ Literal
   / Booleano
   / String
   / Char
+  / "null" { return crearNodo('null', { tipo: 'null', valor: null }); }
 
 // ===== Llamadas a funciones =====
 Llamada 

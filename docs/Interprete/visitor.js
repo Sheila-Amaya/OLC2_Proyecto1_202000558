@@ -25,6 +25,9 @@
  * @typedef {import('./docs/Interprete/nodos.js').Char} Char
 
 
+ * @typedef {import('./docs/Interprete/nodos.js').Null} Null
+
+
  * @typedef {import('./docs/Interprete/nodos.js').DeclaracionVariable} DeclaracionVariable
 
 
@@ -142,6 +145,15 @@ export class BaseVisitor {
      */
     visitChar(node) {
         throw new Error('Metodo visitChar no implementado');
+    }
+    
+
+    /**
+     * @param {Null} node
+     * @returns {any}
+     */
+    visitNull(node) {
+        throw new Error('Metodo visitNull no implementado');
     }
     
 

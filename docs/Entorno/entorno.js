@@ -1,3 +1,5 @@
+import { obtenerTipo } from "../Util/utils.js";
+
 export class Entorno {
 
     /**
@@ -15,7 +17,7 @@ export class Entorno {
      */
     setVariable(nombre, valor, tipo) {
         if (this.valores.hasOwnProperty(nombre)) {
-            throw new Error(`Variable '${nombre}' ya definida en este entorno.`);
+            throw new Error(`variable '${nombre}' ya definida en este entorno.`);
         }
         this.valores[nombre] = valor;
         this.tipos[nombre] = tipo;
@@ -30,7 +32,7 @@ export class Entorno {
         } else if (this.padre) {
             return this.padre.getVariable(nombre);
         } else {
-            throw new Error(`Variable '${nombre}' no definida.`);
+            throw new Error(`variable '${nombre}' no definida.`);
         }
     }
 
@@ -47,7 +49,7 @@ export class Entorno {
         if (this.padre) {
             return this.padre.getTipoVariable(nombre);
         }
-        throw new Error(`La variable '${nombre}' no está definida.`);
+        throw new Error(`La variable '${nombre}' no esta definida.`);
     }
 
     /**
@@ -56,12 +58,16 @@ export class Entorno {
    */
     assignVariable(nombre, valor) {
         if (this.valores.hasOwnProperty(nombre)) {
+            // Actualizar el tipo si el valor actual es null y se asigna un nuevo valor
+            if (this.tipos[nombre] === 'null') {
+                this.tipos[nombre] = obtenerTipo(valor); // Actualiza el tipo al del nuevo valor
+            }
             this.valores[nombre] = valor;
             return;
         } else if (this.padre) {
             this.padre.assignVariable(nombre, valor);
         } else {
-            throw new Error(`Variable '${nombre}' no definida.`);
+            throw new Error(`variable '${nombre}' no definida.`);
         }
     }
 

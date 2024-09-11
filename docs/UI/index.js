@@ -11,11 +11,11 @@ window.MonacoEnvironment = {
     }
 };
 
-let editors = {}; // Para almacenar múltiples editores
+let editors = {}; // Para almacenar multiples editores
 let currentTabId = 0;
 let activeTabId = null;
 
-// Crear un editor vacío al cargar la página
+// Crear un editor vacio al cargar la página
 function initializeEditor() {
     const editorContainer = document.getElementById('editor');
     const defaultEditor = monaco.editor.create(editorContainer, {
@@ -146,7 +146,7 @@ function executeCode() {
                 try {
                     sentencia.accept(interprete);
                 } catch (error) {
-                    logToConsole(`Error: ${error.message} at line ${error.location?.start.line} column ${error.location?.start.column}`);
+                    logToConsole(`\nError: ${error.message} at line ${error.location?.start.line} column ${error.location?.start.column}`);
                 }
             });
             logToConsole(interprete.salida);

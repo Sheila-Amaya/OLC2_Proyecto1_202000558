@@ -272,6 +272,39 @@ export class Char extends Expresion {
     }
 }
     
+export class Null extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {string} options.tipo Tipo del null
+ * @param {null} options.valor Valor del null
+    */
+    constructor({ tipo, valor }) {
+        super();
+        
+        /**
+         * Tipo del null
+         * @type {string}
+        */
+        this.tipo = tipo;
+
+
+        /**
+         * Valor del null
+         * @type {null}
+        */
+        this.valor = valor;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitNull(this);
+    }
+}
+    
 export class DeclaracionVariable extends Expresion {
 
     /**
@@ -665,4 +698,4 @@ export class Llamada extends Expresion {
     }
 }
     
-export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, DeclaracionVariable, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Bloque, If, While, For, Break, Continue, Return, Llamada }
+export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Bloque, If, While, For, Break, Continue, Return, Llamada }
