@@ -116,6 +116,7 @@ export class Aritmeticas {
 
         // Verificar division por cero
         if (der === 0) {
+            console.warn('division por cero, no permitida');
             return { valor: null, tipo: 'null' };
         }
 

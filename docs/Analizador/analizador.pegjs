@@ -89,7 +89,7 @@ Reserved
 
 // ===== Identificadores validos ===== 
 Identificador 
-  = !Reserved [a-zA-Z_][a-zA-Z0-9_]* { return text(); } 
+  = [a-zA-Z_][a-zA-Z0-9_]* !Reserved { return text(); } 
 
 // ===== Expresiones =====
 Expresion 
