@@ -1,4 +1,3 @@
-
 {
   const crearNodo = (tipoNodo, props) => {
     const tipos = {
@@ -19,10 +18,11 @@
       'continue': nodos.Continue,
       'return': nodos.Return,
       'llamada': nodos.Llamada,
-      'bool': nodos.Booleano,
+      'boolean': nodos.Booleano,
       'string': nodos.String,
       'char': nodos.Char,
-      'null': nodos.Null
+      'null': nodos.Null,
+      'ternario': nodos.Ternario
     };
 
     const nodo = new tipos[tipoNodo](props);
@@ -30,7 +30,6 @@
     return nodo;
   }
 }
-
 
 // ===== Programa principal =====
 programa = _ dcl:Declaracion* _ { return dcl }
@@ -87,64 +86,86 @@ Reserved
   = "true" / "false" /"int" / "float" / "string" / "bool" / "char" / "var" / "if" / "else" / "while" / "for" 
   / "break" / "continue" / "return" / "null"
 
-// ===== Identificadores validos ===== 
+// ===== Identificadores =====
 Identificador 
   = [a-zA-Z_][a-zA-Z0-9_]* !Reserved { return text(); } 
 
 // ===== Expresiones =====
 Expresion 
-  = Asignacion
+  = Ternario
 
-// ===== Asignacion =====
+// ===== Operador Ternario =====
+Ternario 
+  = cond:Logico _ "?" _ expTrue:Expresion _ ":" _ expFalse:Ternario { 
+      return crearNodo('ternario', { cond, expTrue, expFalse }); 
+    }
+  / Logico
+
+// ===== Operaciones Lógicas =====
+Logico 
+  = left:Or tail:( _ "||" _ right:Or { return { op: "||", right }; })* {
+      return tail.reduce((left, { op, right }) => crearNodo('binaria', { op, izq: left, der: right }), left);
+    }
+
+Or
+  = left:And tail:( _ "&&" _ right:And { return { op: "&&", right }; })* {
+      return tail.reduce((left, { op, right }) => crearNodo('binaria', { op, izq: left, der: right }), left);
+    }
+
+And
+  = left:Not tail:( _ "&&" _ right:Not { return { op: "&&", right }; })* {
+      return tail.reduce((left, { op, right }) => crearNodo('binaria', { op, izq: left, der: right }), left);
+    }
+
+// ===== Operador Not =====
+Not
+  = "!" _ exp:Not { 
+      return crearNodo('unaria', { op: '!', exp: exp }); 
+    }
+  / Comparacion
+
+// ===== Operaciones de Comparacion =====
+Comparacion 
+  = left:Relacional tail:( _ op:("==" / "!=") _ right:Relacional { return { op, right }; })* {
+      return tail.reduce((left, { op, right }) => crearNodo('binaria', { op, izq: left, der: right }), left);
+    }
+
+// ===== Operaciones Relacionales =====
+Relacional
+  = left:Suma tail:( _ op:("<" / ">" / "<=" / ">=") _ right:Suma { return { op, right }; })* {
+      return tail.reduce((left, { op, right }) => crearNodo('binaria', { op, izq: left, der: right }), left);
+    }
+
+// ===== Asignación =====
 Asignacion 
   = id:Identificador _ op:OperadorAsignacion _ asgn:Asignacion { return crearNodo('asignacion', { id, op, asgn }); }
   / Comparacion
 
-// ===== Op. de asignacion =====
+// ===== Op. de Asignación =====
 OperadorAsignacion 
   = "=" / "+=" / "-=" { return text(); }
-
-// ===== Comparaciones =====
-Comparacion 
-  = izq:Suma expansion:(_ op:("<=" / "==") _ der:Suma { return { tipo: op, der }; })* { 
-      return expansion.reduce(
-        (operacionAnterior, operacionActual) => {
-          const { tipo, der } = operacionActual;
-          return crearNodo('binaria', { op: tipo, izq: operacionAnterior, der });
-        },
-        izq
-      );
-    }
 
 // ===== Operaciones de Suma y Resta =====
 Suma 
   = izq:Multiplicacion expansion:(_ op:("+" / "-") _ der:Multiplicacion { return { tipo: op, der }; })* { 
-      return expansion.reduce(
-        (operacionAnterior, operacionActual) => {
+      return expansion.reduce((operacionAnterior, operacionActual) => {
           const { tipo, der } = operacionActual;
           return crearNodo('binaria', { op: tipo, izq: operacionAnterior, der });
-        },
-        izq
-      );
+      }, izq);
     }
 
 // ===== Operaciones de Multiplicacion, Division y Modulo =====
 Multiplicacion 
   = izq:Unaria expansion:(_ op:("*" / "/" / "%") _ der:Unaria { return { tipo: op, der }; })* {
-      return expansion.reduce(
-        (operacionAnterior, operacionActual) => {
+      return expansion.reduce((operacionAnterior, operacionActual) => {
           const { tipo, der } = operacionActual;
           return crearNodo('binaria', { op: tipo, izq: operacionAnterior, der });
-        },
-        izq
-      );
+      }, izq);
     }
 
-// ===== negacion Unaria  =====
+// ===== Negacion Unaria =====
 Unaria 
-  = "-" _ exp:Unaria { 
-      return crearNodo('unaria', { op: '-', exp: exp }); 
-    }
+  = "-" _ exp:Unaria { return crearNodo('unaria', { op: '-', exp: exp }); }
   / Literal
   / Llamada
 
@@ -159,12 +180,7 @@ Literal
 // ===== Llamadas a funciones =====
 Llamada 
   = callee:Numero _ params:("(" args:Argumentos? ")" { return args })* {
-      return params.reduce(
-        (callee, args) => {
-          return crearNodo('llamada', { callee, args: args || [] });
-        },
-        callee
-      );
+      return params.reduce((callee, args) => crearNodo('llamada', { callee, args: args || [] }), callee);
     }
 
 // ===== Argumentos de llamadas =====
@@ -173,26 +189,25 @@ Argumentos
       return [arg, ...args]; 
     }
 
-// ===== Números, agrupaciones y referencias a variables =====
+// ===== Numeros, agrupaciones y referencias a variables =====
 Numero 
   = Num_decimal 
   / Num_entero
   / "(" _ exp:Expresion _ ")" {  return crearNodo('agrupacion', { exp });  }
   / id:Identificador          {  return crearNodo('referenciaVariable', { id }); }
 
-// ===== Números enteros =====
+// ===== Numeros enteros =====
 Num_entero 
   = [0-9]+ { return crearNodo('numero', { tipo: 'int', valor: parseInt(text(), 10) }); }
 
-// ===== Números decimales =====
+// ===== Numeros decimales =====
 Num_decimal 
   = [0-9]+ ("." [0-9]+) { return crearNodo('numero', { tipo: 'float', valor: parseFloat(text()) });  }
 
 // ===== Literales Booleanos =====
 Booleano
-  = "true"  { return crearNodo('bool', { tipo: 'bool', valor: true }); }
-  / "false" { return crearNodo('bool', { tipo: 'bool', valor: false }); }
-
+  = "true"  { return crearNodo('boolean', { tipo: 'boolean', valor: true }); }
+  / "false" { return crearNodo('boolean', { tipo: 'boolean', valor: false }); }
 
 // ===== Literales String =====
 String
@@ -215,10 +230,9 @@ EscapeSequence
 Char
   = "'" char:. "'" { return crearNodo('char', { tipo: 'char', valor: char }); }
 
-
 // ===== Tipos de datos permitidos =====
 Type 
-  = "int" / "float" / "string" / "bool" / "char"/ "var" {  return text();  }
+  = "int" / "float" / "string" / "boolean" / "char"/ "var" {  return text(); }
 
 // ===== Espacios en blanco y comentarios =====
 _ 

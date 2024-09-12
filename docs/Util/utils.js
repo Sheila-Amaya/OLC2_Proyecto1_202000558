@@ -9,7 +9,7 @@ export function obtenerTipo(valor) {
     if (typeof valor === 'number') {
         return (valor % 1 === 0) ? 'int' : 'float'; 
     } else if (typeof valor === 'boolean') {
-        return 'bool';
+        return 'boolean';
     } else if (typeof valor === 'string') {
         return valor.length === 1 ? 'char' : 'string';
     } else if (valor === null) {

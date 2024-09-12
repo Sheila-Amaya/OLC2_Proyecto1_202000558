@@ -113,7 +113,7 @@ function openFile(event) {
             };
             reader.readAsText(file);
         } else {
-            alert("Por favor selecciona un archivo con extensión .oak");
+            alert("Por favor selecciona un archivo con extension .oak");
         }
     }
 }
@@ -141,6 +141,7 @@ function executeCode() {
         const codigoFuente = activeEditor.getValue();
         try {
             const sentencias = parse(codigoFuente);
+            console.log(sentencias);
             const interprete = new InterpreterVisitor();
             sentencias.forEach(sentencia => {
                 try {

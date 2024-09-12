@@ -7,12 +7,16 @@ import { embebidas } from "../Entorno/embebidas.js";
 import { obtenerTipo } from "../Util/utils.js";
 import { Aritmeticas } from "../Expression/aritmeticas.js";
 import { Asignacion } from "../Expression/asignacion.js";
+import { Comparaciones } from "../Expression/comparacion.js";
 
 export class InterpreterVisitor extends BaseVisitor {
 
     constructor() {
         super();
         this.entornoActual = new Entorno();
+
+        this.entornoActual.setVariable('true', true, 'boolean');
+        this.entornoActual.setVariable('false', false, 'boolean');
 
         Object.entries(embebidas).forEach(([nombre, funcion]) => {
             this.entornoActual.setVariable(nombre, funcion);
@@ -74,14 +78,23 @@ export class InterpreterVisitor extends BaseVisitor {
             case '%':
                 const resultadoModulo = Aritmeticas.modulo(izq, der);
                 if (resultadoModulo.tipo) {
-                    node.tipo = resultadoModulo.tipo; // Actualiza el tipo del nodo si es necesario
+                    node.tipo = resultadoModulo.tipo; 
                 }
                 return resultadoModulo.valor;
 
-            case '<=':
-                    return izq <= der;
+            // Operadores de comparacion
             case '==':
-                    return izq === der;
+                const resultadoIgual = Comparaciones.igualdad(izq, der);
+                if (resultadoIgual.tipo) {
+                    node.tipo = resultadoIgual.tipo;
+                }
+                return resultadoIgual.valor;
+            case '!=':
+                const resultadoDiferente = Comparaciones.desigualdad(izq, der);
+                if (resultadoDiferente.tipo) {
+                    node.tipo = resultadoDiferente.tipo;
+                }
+                return resultadoDiferente.valor;
             default:
                 throw new Error(`Operador no soportado: ${node.op}`);
         }
@@ -153,6 +166,16 @@ export class InterpreterVisitor extends BaseVisitor {
      * */
     visitNull(node) {
         return null;
+    }
+
+    /**
+     *  
+     * @type {BaseVisitor['visitTernario']}
+     *  
+     * */
+    visitTernario(node) {
+        const cond = node.cond.accept(this);
+        return cond ? node.expTrue.accept(this) : node.expFalse.accept(this);
     }
 
 

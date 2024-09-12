@@ -43,6 +43,9 @@
  * @typedef {import('./docs/Interprete/nodos.js').Asignacion} Asignacion
 
 
+ * @typedef {import('./docs/Interprete/nodos.js').Ternario} Ternario
+
+
  * @typedef {import('./docs/Interprete/nodos.js').Bloque} Bloque
 
 
@@ -199,6 +202,15 @@ export class BaseVisitor {
      */
     visitAsignacion(node) {
         throw new Error('Metodo visitAsignacion no implementado');
+    }
+    
+
+    /**
+     * @param {Ternario} node
+     * @returns {any}
+     */
+    visitTernario(node) {
+        throw new Error('Metodo visitTernario no implementado');
     }
     
 

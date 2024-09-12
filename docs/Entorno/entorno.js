@@ -125,7 +125,7 @@ export class Entorno {
                 return 0.0;
             case 'string':
                 return "";
-            case 'bool':
+            case 'boolean':
                 return true;
             case 'char':
                 return '\0';

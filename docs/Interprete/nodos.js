@@ -178,7 +178,7 @@ export class Booleano extends Expresion {
     /**
     * @param {Object} options
     * @param {string} options.tipo Tipo del booleano
- * @param {bool} options.valor Valor del booleano
+ * @param {boolean} options.valor Valor del booleano
     */
     constructor({ tipo, valor }) {
         super();
@@ -192,7 +192,7 @@ export class Booleano extends Expresion {
 
         /**
          * Valor del booleano
-         * @type {bool}
+         * @type {boolean}
         */
         this.valor = valor;
 
@@ -462,6 +462,47 @@ export class Asignacion extends Expresion {
     }
 }
     
+export class Ternario extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {Expresion} options.cond Condicion del ternario
+ * @param {Expresion} options.stmtTrue Cuerpo del verdadero
+ * @param {Expresion} options.stmtFalse Cuerpo del falso
+    */
+    constructor({ cond, stmtTrue, stmtFalse }) {
+        super();
+        
+        /**
+         * Condicion del ternario
+         * @type {Expresion}
+        */
+        this.cond = cond;
+
+
+        /**
+         * Cuerpo del verdadero
+         * @type {Expresion}
+        */
+        this.stmtTrue = stmtTrue;
+
+
+        /**
+         * Cuerpo del falso
+         * @type {Expresion}
+        */
+        this.stmtFalse = stmtFalse;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitTernario(this);
+    }
+}
+    
 export class Bloque extends Expresion {
 
     /**
@@ -706,4 +747,4 @@ export class Llamada extends Expresion {
     }
 }
     
-export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Bloque, If, While, For, Break, Continue, Return, Llamada }
+export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Ternario, Bloque, If, While, For, Break, Continue, Return, Llamada }
