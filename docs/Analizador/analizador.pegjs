@@ -97,8 +97,12 @@ Expresion
 
 // ===== Asignacion =====
 Asignacion 
-  = id:Identificador _ "=" _ asgn:Asignacion { return crearNodo('asignacion', { id, asgn }); }
+  = id:Identificador _ op:OperadorAsignacion _ asgn:Asignacion { return crearNodo('asignacion', { id, op, asgn }); }
   / Comparacion
+
+// ===== Op. de asignacion =====
+OperadorAsignacion 
+  = "=" / "+=" / "-=" { return text(); }
 
 // ===== Comparaciones =====
 Comparacion 

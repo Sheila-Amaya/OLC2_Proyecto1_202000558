@@ -7,7 +7,7 @@
 
 export function obtenerTipo(valor) {
     if (typeof valor === 'number') {
-        return Number.isInteger(valor) && valor % 1 !== 0 ? 'float' : 'int';
+        return (valor % 1 === 0) ? 'int' : 'float'; 
     } else if (typeof valor === 'boolean') {
         return 'bool';
     } else if (typeof valor === 'string') {
@@ -18,3 +18,5 @@ export function obtenerTipo(valor) {
         throw new Error('Tipo de dato no soportado');
     }
 }
+
+
