@@ -9,6 +9,7 @@ import { Aritmeticas } from "../Expression/aritmeticas.js";
 import { Asignacion } from "../Expression/asignacion.js";
 import { Comparaciones } from "../Expression/comparacion.js";
 import { Relacionales } from "../Expression/relacionales.js";
+import { Logicos } from "../Expression/logicos.js";
 
 export class InterpreterVisitor extends BaseVisitor {
 
@@ -119,7 +120,19 @@ export class InterpreterVisitor extends BaseVisitor {
                 if (resultadoMenorOIgual.tipo) {
                     node.tipo = resultadoMenorOIgual.tipo; 
                 }
-                return resultadoMenorOIgual.valor;
+            // Operadores logicos
+            case '&&':
+                const resultadoAnd = Logicos.and(izq, der);
+                if (resultadoAnd.tipo) {
+                    node.tipo = resultadoAnd.tipo; 
+                }
+                return resultadoAnd.valor;
+            case '||':
+                const resultadoOr = Logicos.or(izq, der);
+                if (resultadoOr.tipo) {
+                    node.tipo = resultadoOr.tipo; 
+                }
+                return resultadoOr.valor;
             default:
                 throw new Error(`Operador no soportado: ${node.op}`);
         }
@@ -137,6 +150,11 @@ export class InterpreterVisitor extends BaseVisitor {
                 const resultado = Aritmeticas.negacionUnaria(exp);
                 node.tipo = resultado.tipo; // Actualiza el tipo del nodo
                 return resultado.valor;
+            // Operador logico NOT
+            case '!':
+                const resultadoNot = Logicos.not(exp);
+                node.tipo = resultadoNot.tipo; 
+                return resultadoNot.valor;
             default:
                 throw new Error(`Operador unario no soportado: ${node.op}`);
         }
