@@ -8,6 +8,7 @@ import { obtenerTipo } from "../Util/utils.js";
 import { Aritmeticas } from "../Expression/aritmeticas.js";
 import { Asignacion } from "../Expression/asignacion.js";
 import { Comparaciones } from "../Expression/comparacion.js";
+import { Relacionales } from "../Expression/relacionales.js";
 
 export class InterpreterVisitor extends BaseVisitor {
 
@@ -94,7 +95,31 @@ export class InterpreterVisitor extends BaseVisitor {
                 if (resultadoDiferente.tipo) {
                     node.tipo = resultadoDiferente.tipo;
                 }
-                return resultadoDiferente.valor;
+            // Operadores relacionales
+            case '>':
+                const resultadoMayorQue = Relacionales.mayorQue(izq, der);
+                if (resultadoMayorQue.tipo) {
+                    node.tipo = resultadoMayorQue.tipo; 
+                }
+                return resultadoMayorQue.valor;
+            case '>=':
+                const resultadoMayorOIgual = Relacionales.mayorOIgual(izq, der);
+                if (resultadoMayorOIgual.tipo) {
+                    node.tipo = resultadoMayorOIgual.tipo; 
+                }
+                return resultadoMayorOIgual.valor;
+            case '<':
+                const resultadoMenorQue = Relacionales.menorQue(izq, der);
+                if (resultadoMenorQue.tipo) {
+                    node.tipo = resultadoMenorQue.tipo; 
+                }
+                return resultadoMenorQue.valor;
+            case '<=':
+                const resultadoMenorOIgual = Relacionales.menorOIgual(izq, der);
+                if (resultadoMenorOIgual.tipo) {
+                    node.tipo = resultadoMenorOIgual.tipo; 
+                }
+                return resultadoMenorOIgual.valor;
             default:
                 throw new Error(`Operador no soportado: ${node.op}`);
         }

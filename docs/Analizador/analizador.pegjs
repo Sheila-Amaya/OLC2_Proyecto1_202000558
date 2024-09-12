@@ -132,9 +132,10 @@ Comparacion
 
 // ===== Operaciones Relacionales =====
 Relacional
-  = left:Suma tail:( _ op:("<" / ">" / "<=" / ">=") _ right:Suma { return { op, right }; })* {
+  = left:Suma tail:( _ op:("<=" / ">=" / "<" / ">") _ right:Suma { return { op, right }; })* {
       return tail.reduce((left, { op, right }) => crearNodo('binaria', { op, izq: left, der: right }), left);
     }
+
 
 // ===== Asignación =====
 Asignacion 

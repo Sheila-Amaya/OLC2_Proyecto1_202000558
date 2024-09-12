@@ -7,7 +7,7 @@ export class Comparaciones {
      * @param {any} izq - Operando izquierdo
      * @param {any} der - Operando derecho
      * @returns {object} - tipo y valor de la comp.
-     * @throws {Error} - no compatibles para la comparación
+     * @throws {Error} - no compatibles para la comparacion
      */
 
     static igualdad(izq, der) {
