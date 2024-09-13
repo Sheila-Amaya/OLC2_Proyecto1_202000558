@@ -61,6 +61,9 @@
  * @typedef {import('./docs/Interprete/nodos.js').ToUpperCase} ToUpperCase
 
 
+ * @typedef {import('./docs/Interprete/nodos.js').TypeOf} TypeOf
+
+
  * @typedef {import('./docs/Interprete/nodos.js').Bloque} Bloque
 
 
@@ -271,6 +274,15 @@ export class BaseVisitor {
      */
     visitToUpperCase(node) {
         throw new Error('Metodo visitToUpperCase no implementado');
+    }
+    
+
+    /**
+     * @param {TypeOf} node
+     * @returns {any}
+     */
+    visitTypeOf(node) {
+        throw new Error('Metodo visitTypeOf no implementado');
     }
     
 

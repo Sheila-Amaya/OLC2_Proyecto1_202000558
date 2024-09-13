@@ -368,6 +368,15 @@ export class InterpreterVisitor extends BaseVisitor {
     }
 
     /**
+     * @type {BaseVisitor['visitTypeOf']}
+     */
+    visitTypeOf(node) {
+        const valor = node.exp.accept(this);
+        const tipo = obtenerTipo(valor);
+        return tipo;
+    }
+
+    /**
       * @type {BaseVisitor['visitExpresionStmt']}
       */
     visitExpresionStmt(node) {

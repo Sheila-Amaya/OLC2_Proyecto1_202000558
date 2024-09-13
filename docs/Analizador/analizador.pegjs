@@ -27,7 +27,8 @@
       'parseFloat': nodos.ParseFloat,
       'ToString': nodos.ToString,
       'toLowerCase': nodos.ToLowerCase,
-      'toUpperCase': nodos.ToUpperCase
+      'toUpperCase': nodos.ToUpperCase,
+      'typeOf': nodos.TypeOf
     };
 
     const nodo = new tipos[tipoNodo](props);
@@ -226,7 +227,7 @@ parseInt
     }
 
 parseFloat
-  = "parseFloat" _ "(" _ exp:Expresion _ ")" {
+  = "parsefloat" _ "(" _ exp:Expresion _ ")" {
       return crearNodo('parseFloat', { exp });
     }
 
@@ -246,7 +247,7 @@ toUpperCase
     }
 
 typeOf 
-  = "typeOf" _ "(" _ exp:Expresion _ ")" {
+  = "typeof"  _ exp:Expresion _  {
       return crearNodo('typeOf', { exp });
     }
 

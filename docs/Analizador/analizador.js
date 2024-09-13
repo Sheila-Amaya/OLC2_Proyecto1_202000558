@@ -214,11 +214,11 @@ function peg$parse(input, options) {
   var peg$c34 = ">=";
   var peg$c35 = "-";
   var peg$c36 = "parseInt";
-  var peg$c37 = "parseFloat";
+  var peg$c37 = "parsefloat";
   var peg$c38 = "toString";
   var peg$c39 = "toLowerCase";
   var peg$c40 = "toUpperCase";
-  var peg$c41 = "typeOf";
+  var peg$c41 = "typeof";
   var peg$c42 = ".";
   var peg$c43 = "\"";
   var peg$c44 = "\\";
@@ -280,11 +280,11 @@ function peg$parse(input, options) {
   var peg$e39 = peg$classExpectation(["%", "*", "/"], false, false);
   var peg$e40 = peg$literalExpectation("-", false);
   var peg$e41 = peg$literalExpectation("parseInt", false);
-  var peg$e42 = peg$literalExpectation("parseFloat", false);
+  var peg$e42 = peg$literalExpectation("parsefloat", false);
   var peg$e43 = peg$literalExpectation("toString", false);
   var peg$e44 = peg$literalExpectation("toLowerCase", false);
   var peg$e45 = peg$literalExpectation("toUpperCase", false);
-  var peg$e46 = peg$literalExpectation("typeOf", false);
+  var peg$e46 = peg$literalExpectation("typeof", false);
   var peg$e47 = peg$classExpectation([["0", "9"]], false, false);
   var peg$e48 = peg$literalExpectation(".", false);
   var peg$e49 = peg$literalExpectation("\"", false);
@@ -2538,7 +2538,7 @@ function peg$parse(input, options) {
   }
 
   function peg$parsetypeOf() {
-    var s0, s1, s2, s3, s4, s5, s6, s7;
+    var s0, s1, s2, s3, s4;
 
     s0 = peg$currPos;
     if (input.substr(peg$currPos, 6) === peg$c41) {
@@ -2550,36 +2550,11 @@ function peg$parse(input, options) {
     }
     if (s1 !== peg$FAILED) {
       s2 = peg$parse_();
-      if (input.charCodeAt(peg$currPos) === 40) {
-        s3 = peg$c7;
-        peg$currPos++;
-      } else {
-        s3 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$e7); }
-      }
+      s3 = peg$parseExpresion();
       if (s3 !== peg$FAILED) {
         s4 = peg$parse_();
-        s5 = peg$parseExpresion();
-        if (s5 !== peg$FAILED) {
-          s6 = peg$parse_();
-          if (input.charCodeAt(peg$currPos) === 41) {
-            s7 = peg$c3;
-            peg$currPos++;
-          } else {
-            s7 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$e3); }
-          }
-          if (s7 !== peg$FAILED) {
-            peg$savedPos = s0;
-            s0 = peg$f45(s5);
-          } else {
-            peg$currPos = s0;
-            s0 = peg$FAILED;
-          }
-        } else {
-          peg$currPos = s0;
-          s0 = peg$FAILED;
-        }
+        peg$savedPos = s0;
+        s0 = peg$f45(s3);
       } else {
         peg$currPos = s0;
         s0 = peg$FAILED;
@@ -3431,7 +3406,8 @@ function peg$parse(input, options) {
       'parseFloat': nodos.ParseFloat,
       'ToString': nodos.ToString,
       'toLowerCase': nodos.ToLowerCase,
-      'toUpperCase': nodos.ToUpperCase
+      'toUpperCase': nodos.ToUpperCase,
+      'typeOf': nodos.TypeOf
     };
 
     const nodo = new tipos[tipoNodo](props);
