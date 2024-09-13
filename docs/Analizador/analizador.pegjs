@@ -46,8 +46,8 @@ VarDcl
 
 // ===== Sentencias =====
 Stmt 
-  = "System.out.println(" _ exp:Expresion _ ")" _ ";" { 
-      return crearNodo('print', { exp }); 
+  = "System.out.println(" _ listaExpresiones:ListaExpresiones? _ ")" _ ";" {
+      return crearNodo('print', { listaExpresiones: listaExpresiones || [] });
     }
   / "{" _ dcls:Declaracion* _ "}" { 
       return crearNodo('bloque', { dcls }); 
@@ -75,6 +75,12 @@ Stmt
       return crearNodo('expresionStmt', { exp }); 
     }
 
+// ===== Lista de expresiones =====
+ListaExpresiones 
+  = primeraExp:Expresion _ siguientesExps:("," _ siguienteExp:Expresion { return siguienteExp; })* { 
+      return [primeraExp, ...siguientesExps]; 
+    }
+  
 // ===== Inicializacio n del bucle For =====
 ForInit 
   = dcl:VarDcl { return dcl }

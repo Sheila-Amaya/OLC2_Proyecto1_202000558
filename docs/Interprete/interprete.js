@@ -286,8 +286,10 @@ export class InterpreterVisitor extends BaseVisitor {
       * @type {BaseVisitor['visitPrint']}
       */
     visitPrint(node) {
-        const valor = node.exp.accept(this);
-        this.salida += `${valor}\n`;
+        const expresiones = Array.isArray(node.listaExpresiones) ? node.listaExpresiones : []; // Si no hay expresiones, se asigna un arreglo vacio
+        const resultados = expresiones.map(exp => exp.accept(this));
+        
+        this.salida += resultados.join(' ') + '\n';
     }
 
 
