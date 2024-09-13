@@ -70,6 +70,9 @@
  * @typedef {import('./docs/Interprete/nodos.js').If} If
 
 
+ * @typedef {import('./docs/Interprete/nodos.js').ElseIf} ElseIf
+
+
  * @typedef {import('./docs/Interprete/nodos.js').While} While
 
 
@@ -301,6 +304,15 @@ export class BaseVisitor {
      */
     visitIf(node) {
         throw new Error('Metodo visitIf no implementado');
+    }
+    
+
+    /**
+     * @param {ElseIf} node
+     * @returns {any}
+     */
+    visitElseIf(node) {
+        throw new Error('Metodo visitElseIf no implementado');
     }
     
 

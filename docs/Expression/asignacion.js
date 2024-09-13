@@ -10,7 +10,7 @@ export class Asignacion {
     }
 
     /**
-     * Maneja la asignación '='.
+     * Maneja la asignacion '='.
      */
     static AsignacionEstandar(nombreVariable, valorAsignado) {
         const tipoVariable = this.entorno.getTipoVariable(nombreVariable);
@@ -24,7 +24,7 @@ export class Asignacion {
             return;
         }
 
-        // Validación de tipos
+        // Validacion de tipos
         if (tipoVariable !== tipoValorAsignado) {
             if (tipoVariable === 'float' && tipoValorAsignado === 'int') {
                 this.entorno.assignVariable(nombreVariable, parseFloat(valorAsignado));
@@ -39,7 +39,7 @@ export class Asignacion {
     }
 
     /**
-     * Maneja la asignación '+='.
+     * Maneja la asignacion '+='.
      */
     static AsignacionSuma(nombreVariable, valorAsignado) {
         const valorActual = this.entorno.getVariable(nombreVariable);
@@ -71,7 +71,7 @@ export class Asignacion {
     }
 
     /**
-     * Maneja la asignación '-='.
+     * Maneja la asignacion '-='.
      */
     static AsignacionResta(nombreVariable, valorAsignado) {
         const valorActual = this.entorno.getVariable(nombreVariable);

@@ -12,6 +12,7 @@
       'asignacion': nodos.Asignacion,
       'bloque': nodos.Bloque,
       'if': nodos.If,
+      'ElseIf': nodos.ElseIf,
       'while': nodos.While,
       'for': nodos.For,
       'break': nodos.Break,
@@ -58,10 +59,7 @@ Stmt
   / "{" _ dcls:Declaracion* _ "}" { 
       return crearNodo('bloque', { dcls }); 
     }
-  / "if" _ "(" _ cond:Expresion _ ")" _ stmtTrue:Stmt 
-    stmtFalse:(_ "else" _ stmtFalse:Stmt { return stmtFalse })? { 
-      return crearNodo('if', { cond, stmtTrue, stmtFalse }); 
-    }
+  /  IfElseIf
   / "while" _ "(" _ cond:Expresion _ ")" _ stmt:Stmt { 
       return crearNodo('while', { cond, stmt }); 
     }
@@ -80,6 +78,21 @@ Stmt
   / exp:Expresion _ ";" { 
       return crearNodo('expresionStmt', { exp }); 
     }
+
+// ===== Sentencia If =====
+// ===== If, Else If, Else =====
+IfElseIf
+  = "if" _ "(" _ cond:Expresion _ ")" _ stmtTrue:Stmt 
+    elseIfBranches:ElseIfBranch* 
+    stmtFalse:(_ "else" _ stmtFalse:Stmt { return stmtFalse })? { 
+      return crearNodo('if', { cond, stmtTrue, elseIfBranches, stmtFalse }); 
+    }
+
+ElseIfBranch
+  = _ "else" _ "if" _ "(" _ cond:Expresion _ ")" _ stmt:Stmt { 
+      return crearNodo('ElseIf', { cond, stmt });
+    }
+
 
 // ===== Lista de expresiones =====
 ListaExpresiones 

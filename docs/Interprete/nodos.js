@@ -684,9 +684,10 @@ export class If extends Expresion {
     * @param {Object} options
     * @param {Expresion} options.cond Condicion del if
  * @param {Expresion} options.stmtTrue Cuerpo del if
+ * @param {Expresion[]} options.elseIfBranches Ramas del else if
  * @param {Expresion|undefined} options.stmtFalse Cuerpo del else
     */
-    constructor({ cond, stmtTrue, stmtFalse }) {
+    constructor({ cond, stmtTrue, elseIfBranches, stmtFalse }) {
         super();
         
         /**
@@ -704,6 +705,13 @@ export class If extends Expresion {
 
 
         /**
+         * Ramas del else if
+         * @type {Expresion[]}
+        */
+        this.elseIfBranches = elseIfBranches;
+
+
+        /**
          * Cuerpo del else
          * @type {Expresion|undefined}
         */
@@ -716,6 +724,39 @@ export class If extends Expresion {
      */
     accept(visitor) {
         return visitor.visitIf(this);
+    }
+}
+    
+export class ElseIf extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {Expresion} options.cond Condicion del else if
+ * @param {Expresion} options.stmt Cuerpo del else if
+    */
+    constructor({ cond, stmt }) {
+        super();
+        
+        /**
+         * Condicion del else if
+         * @type {Expresion}
+        */
+        this.cond = cond;
+
+
+        /**
+         * Cuerpo del else if
+         * @type {Expresion}
+        */
+        this.stmt = stmt;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitElseIf(this);
     }
 }
     
@@ -897,4 +938,4 @@ export class Llamada extends Expresion {
     }
 }
     
-export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Ternario, ParseInt, ParseFloat, ToString, ToLowerCase, ToUpperCase, TypeOf, Bloque, If, While, For, Break, Continue, Return, Llamada }
+export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Ternario, ParseInt, ParseFloat, ToString, ToLowerCase, ToUpperCase, TypeOf, Bloque, If, ElseIf, While, For, Break, Continue, Return, Llamada }

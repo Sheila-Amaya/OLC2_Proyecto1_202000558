@@ -44,7 +44,7 @@ function createNewTab(filename = 'Untitled.oak', content = '') {
     newTab.appendChild(tabLabel);
 
     const closeButton = document.createElement('button');
-    closeButton.textContent = 'x';
+    closeButton.textContent = '✘';
     closeButton.classList.add('close-button');
     closeButton.onclick = (e) => {
         e.stopPropagation();

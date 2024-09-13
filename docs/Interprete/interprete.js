@@ -445,15 +445,39 @@ export class InterpreterVisitor extends BaseVisitor {
     visitIf(node) {
         const cond = node.cond.accept(this);
 
+        // condiciones verdaderas, ejecutar stmt
         if (cond) {
             node.stmtTrue.accept(this);
             return;
         }
 
+        for (const elseIfBranch of node.elseIfBranches) {
+            const elseIfCond = elseIfBranch.cond.accept(this);
+
+            // condiciones verdaderas, ejecutar stmt
+            if (elseIfCond) {
+                elseIfBranch.stmt.accept(this);
+                return;
+            }
+        }
+
+        // no se cumple ninguna condicion , ejec. stmtFalse si existe
         if (node.stmtFalse) {
             node.stmtFalse.accept(this);
         }
+    }
 
+    /**
+     * @type {BaseVisitor['visitElseIf']}
+     *  
+     * */
+    visitElseIf(node) {
+        const cond = node.cond.accept(this);
+
+        // condicion verdadera, eval stmt
+        if (cond) {
+            node.stmt.accept(this);
+        }
     }
 
     /**
