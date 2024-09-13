@@ -22,26 +22,18 @@ export class Entorno {
         if (this.existeVariableLocal(nombre)) {
             throw new Error(`Variable '${nombre}' ya definida en este entorno.`);
         }
-        if (valor === null) {
-            valor = this.obtenerValorPorDefecto(tipo); 
-        }
         this.valores[nombre] = valor;
         this.tipos[nombre] = tipo;
-        //console.log(`Variable '${nombre}' declarada con valor ${valor} y tipo ${tipo}`);
     }
-    
 
     /**
      * valor de una variable, buscando en el entorno actual y sus padres
      * @param {string} nombre
-     * @returns {any} Valor de la variable.
-     * @throws {Error} Si la variable no está definida o no ha sido inicializada.
+     * @returns {any} Valor de la variable
+     * @throws {Error} var. no definida
      */
     getVariable(nombre) {
         if (this.valores.hasOwnProperty(nombre)) {
-            if (this.valores[nombre] === undefined) {
-                throw new Error(`La variable '${nombre}' ha sido declarada pero no ha sido inicializada.`);
-            }
             return this.valores[nombre];
         } else if (this.padre) {
             return this.padre.getVariable(nombre);
@@ -51,10 +43,10 @@ export class Entorno {
     }
 
     /**
-     * tipo de una variable, buscando en el entorno actual y sus padres.
+     * tipo de una variable, buscando en el entorno actual y sus padres
      * @param {string} nombre
-     * @returns {string} Tipo de la variable.
-     * @throws {Error} Si la variable no está definida.
+     * @returns {string} Tipo de la variable
+     * @throws {Error} var. no definida
      */
     getTipoVariable(nombre) {
         if (this.tipos.hasOwnProperty(nombre)) {
@@ -69,23 +61,35 @@ export class Entorno {
      * Asigna un valor a una variable existente.
      * @param {string} nombre
      * @param {any} valor
-     * @throws {Error} Si la variable no está definida.
+     * @throws {Error} var. no definida
      */
     assignVariable(nombre, valor) {
         if (this.valores.hasOwnProperty(nombre)) {
-            if (valor === null) {
-                throw new Error(`Error: No se puede asignar 'null' a la variable '${nombre}'.`);
+            const tipoVariable = this.getTipoVariable(nombre);
+            const tipoValorAsignado = obtenerTipo(valor);
+            
+            if (tipoVariable === 'null') {
+                // Permite asignar cualquier valor si la variable es null
+                this.valores[nombre] = valor;
+                this.tipos[nombre] = tipoValorAsignado;
+                return;
             }
-            // Actualiza la variable en el entorno actual
-            this.valores[nombre] = valor;
-            return;
+
+            if (tipoVariable !== tipoValorAsignado) {
+                if (tipoVariable === 'float' && tipoValorAsignado === 'int') {
+                    this.valores[nombre] = parseFloat(valor);
+                } else {
+                    throw new Error(`Tipos incompatibles. No se puede asignar un valor de tipo '${tipoValorAsignado}' a una variable de tipo '${tipoVariable}'.`);
+                }
+            } else {
+                this.valores[nombre] = valor;
+            }
         } else if (this.padre) {
             this.padre.assignVariable(nombre, valor);
         } else {
             throw new Error(`Variable '${nombre}' no definida.`);
         }
     }
-    
 
     /**
      * Verifica si la variable existe en el entorno actual o en los padres
@@ -111,7 +115,6 @@ export class Entorno {
         return this.valores.hasOwnProperty(nombre);
     }
     
-
     /**
      * Obtiene el valor por defecto para un tipo primitivo
      * @param {string} tipo

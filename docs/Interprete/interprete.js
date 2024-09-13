@@ -246,30 +246,24 @@ export class InterpreterVisitor extends BaseVisitor {
     
         if (this.entornoActual.existeVariableLocal(nombreVariable)) {
             throw {
-                message: `La variable '${nombreVariable}' ya esta definida en este entorno.`,
+                message: `La variable '${nombreVariable}' ya está definida en este entorno.`,
                 location: node.location
             };
         }
-
-        if (valorInicial === null) {
-            valorInicial = this.entornoActual.obtenerValorPorDefecto(tipoDefinido);
-        }
     
-        const tipoInferido = obtenerTipo(valorInicial);
-        if (tipoDefinido !== 'var' && tipoDefinido !== tipoInferido) {
+        const tipoInferido = valorInicial === null ? 'null' : obtenerTipo(valorInicial);
+    
+        if (tipoDefinido !== 'var' && tipoDefinido !== tipoInferido && tipoInferido !== 'null') {
             if (tipoDefinido === 'float' && tipoInferido === 'int') {
                 valorInicial = parseFloat(valorInicial);
             } else {
-                throw {
-                    message: `incompatible en variable '${nombreVariable}'. Se esperaba '${tipoDefinido}', pero se recibio '${tipoInferido}'.`,
-                    location: node.location
-                };
+                console.log(`Tipo incompatible en la variable '${nombreVariable}'. Se esperaba '${tipoDefinido}', pero se recibió '${tipoInferido}'. Asignando null.`);
+                valorInicial = null;  // Asigna null si hay incompatibilidad
             }
         } else if (tipoDefinido === 'var') {
             node.tipo = tipoInferido;
         }
     
-        // Almacena la variable en el entorno actual con el tipo y valor 
         this.entornoActual.setVariable(nombreVariable, valorInicial, node.tipo || tipoDefinido);
         console.log(`Variable '${nombreVariable}' declarada con valor ${valorInicial} y tipo ${node.tipo || tipoDefinido}`);
     }
@@ -287,10 +281,15 @@ export class InterpreterVisitor extends BaseVisitor {
       * @type {BaseVisitor['visitPrint']}
       */
     visitPrint(node) {
-        const expresiones = Array.isArray(node.listaExpresiones) ? node.listaExpresiones : []; // Si no hay expresiones, se asigna un arreglo vacio
-        const resultados = expresiones.map(exp => exp.accept(this));
+        const expresiones = Array.isArray(node.listaExpresiones) ? node.listaExpresiones : []; // Si no hay expresiones, se asigna un arreglo vacío
+        const resultados = expresiones.map(exp => {
+            const valor = exp.accept(this);
+            
+            // Verifica si el valor es null y lo convierte a 'null' en string
+            return valor === null ? 'null' : valor;
+        });
         
-        this.salida += resultados.join(' ') + '\n';
+        this.salida += resultados.join(' ') + '\n'; // Concatena los resultados y añade un salto de línea
     }
 
     /**
@@ -388,13 +387,18 @@ export class InterpreterVisitor extends BaseVisitor {
     
         Asignacion.setEntorno(this.entornoActual);
     
-        if (tipoVariable !== tipoValorAsignado) {
-            if (!(tipoVariable === 'float' && tipoValorAsignado === 'int')) { // Permite int a float
-                throw new Error(`Tipos incompatibles. No se puede asignar un valor de tipo '${tipoValorAsignado}' a una variable de tipo '${tipoVariable}'.`);
-            }
+        // Verificar si la variable es de tipo null y aceptar cualquier tipo
+        if (tipoVariable === 'null') {
+            this.entornoActual.assignVariable(nombreVariable, valorAsignado);
+            this.entornoActual.tipos[nombreVariable] = tipoValorAsignado; // Actualiza el tipo a partir del valor asignado
+            console.log(`Variable '${nombreVariable}' asignada con valor ${valorAsignado} y tipo ${tipoValorAsignado}`);
+            return;
         }
     
-        // Manejo de asignaciones dependiendo del ope.
+        if (tipoVariable !== tipoValorAsignado) {
+            throw new Error(`Tipos incompatibles. No se puede asignar un valor de tipo '${tipoValorAsignado}' a una variable de tipo '${tipoVariable}'`);
+        }
+    
         switch (node.op) {
             case "=":
                 Asignacion.AsignacionEstandar(nombreVariable, valorAsignado);
