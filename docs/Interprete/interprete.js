@@ -339,6 +339,35 @@ export class InterpreterVisitor extends BaseVisitor {
         return valor.toString();
     }
 
+    /** 
+     * @type {BaseVisitor['visitToLowerCase']}
+     */
+    visitToLowerCase(node) {
+        const valor = node.exp.accept(this);
+    
+        // Verf. si el valor es de tipo string
+        if (typeof valor !== 'string') {
+            throw new Error(`toLowerCase solo es aplicable a expresiones de tipo string, se recibio ${typeof valor}`);
+        }
+        return valor.toLowerCase();
+    }
+    
+
+    /**
+     * @type {BaseVisitor['visitToUpperCase']}
+     *  
+     * */
+    visitToUpperCase(node) {
+        const valor = node.exp.accept(this);
+    
+        // Verf. si el valor es de tipo string
+        if (typeof valor !== 'string') {
+            throw new Error(`toUpperCase solo es aplicable a expresiones de tipo string, se recibio ${typeof valor}`);
+        }
+    
+        return valor.toUpperCase();
+    }
+
     /**
       * @type {BaseVisitor['visitExpresionStmt']}
       */

@@ -55,6 +55,12 @@
  * @typedef {import('./docs/Interprete/nodos.js').ToString} ToString
 
 
+ * @typedef {import('./docs/Interprete/nodos.js').ToLowerCase} ToLowerCase
+
+
+ * @typedef {import('./docs/Interprete/nodos.js').ToUpperCase} ToUpperCase
+
+
  * @typedef {import('./docs/Interprete/nodos.js').Bloque} Bloque
 
 
@@ -247,6 +253,24 @@ export class BaseVisitor {
      */
     visitToString(node) {
         throw new Error('Metodo visitToString no implementado');
+    }
+    
+
+    /**
+     * @param {ToLowerCase} node
+     * @returns {any}
+     */
+    visitToLowerCase(node) {
+        throw new Error('Metodo visitToLowerCase no implementado');
+    }
+    
+
+    /**
+     * @param {ToUpperCase} node
+     * @returns {any}
+     */
+    visitToUpperCase(node) {
+        throw new Error('Metodo visitToUpperCase no implementado');
     }
     
 

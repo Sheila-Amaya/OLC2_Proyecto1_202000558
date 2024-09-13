@@ -25,7 +25,9 @@
       'ternario': nodos.Ternario,
       'parseInt': nodos.ParseInt,
       'parseFloat': nodos.ParseFloat,
-      'ToString': nodos.ToString
+      'ToString': nodos.ToString,
+      'toLowerCase': nodos.ToLowerCase,
+      'toUpperCase': nodos.ToUpperCase
     };
 
     const nodo = new tipos[tipoNodo](props);
@@ -213,6 +215,9 @@ FuncionesEmbebidas
   = parseInt
   / parseFloat
   / toString
+  / toLowerCase
+  / toUpperCase
+  / typeOf
 
 // ===== Funciones Embebidas =====
 parseInt
@@ -221,13 +226,28 @@ parseInt
     }
 
 parseFloat
-  = "parsefloat" _ "(" _ exp:Expresion _ ")" {
+  = "parseFloat" _ "(" _ exp:Expresion _ ")" {
       return crearNodo('parseFloat', { exp });
     }
 
 toString
   = "toString" _ "(" _ exp:Expresion _ ")" {
       return crearNodo('ToString', { exp });
+    }
+
+toLowerCase
+  = "toLowerCase" _ "(" _ exp:Expresion _ ")" {
+      return crearNodo('toLowerCase', { exp });
+    }
+
+toUpperCase
+  = "toUpperCase" _ "(" _ exp:Expresion _ ")" {
+      return crearNodo('toUpperCase', { exp });
+    }
+
+typeOf 
+  = "typeOf" _ "(" _ exp:Expresion _ ")" {
+      return crearNodo('typeOf', { exp });
     }
 
 // ===== Llamadas a funciones =====

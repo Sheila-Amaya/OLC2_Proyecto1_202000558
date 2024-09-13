@@ -578,6 +578,56 @@ export class ToString extends Expresion {
     }
 }
     
+export class ToLowerCase extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {Expresion} options.exp Expresion a convertir
+    */
+    constructor({ exp }) {
+        super();
+        
+        /**
+         * Expresion a convertir
+         * @type {Expresion}
+        */
+        this.exp = exp;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitToLowerCase(this);
+    }
+}
+    
+export class ToUpperCase extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {Expresion} options.exp Expresion a convertir
+    */
+    constructor({ exp }) {
+        super();
+        
+        /**
+         * Expresion a convertir
+         * @type {Expresion}
+        */
+        this.exp = exp;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitToUpperCase(this);
+    }
+}
+    
 export class Bloque extends Expresion {
 
     /**
@@ -822,4 +872,4 @@ export class Llamada extends Expresion {
     }
 }
     
-export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Ternario, ParseInt, ParseFloat, ToString, Bloque, If, While, For, Break, Continue, Return, Llamada }
+export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Ternario, ParseInt, ParseFloat, ToString, ToLowerCase, ToUpperCase, Bloque, If, While, For, Break, Continue, Return, Llamada }
