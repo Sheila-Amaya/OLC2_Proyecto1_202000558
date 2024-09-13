@@ -31,7 +31,7 @@
   }
 }
 
-// ===== Programa principal =====
+// ===== Programa =====
 programa = _ dcl:Declaracion* _ { return dcl }
 
 // ===== Declaraciones =====
@@ -39,7 +39,7 @@ Declaracion
   = dcl:VarDcl _ { return dcl }
   / stmt:Stmt _  { return stmt }
 
-// ===== Declaración de variables =====
+// ===== Declaracion de variables =====
 VarDcl 
   = tipo:Type _ id:Identificador _ "=" _ exp:Expresion _ ";" { return crearNodo('declaracionVariable', { tipo, id, exp }); }
   / tipo:Type _ id:Identificador _ ";"                       { return crearNodo('declaracionVariable', { tipo, id, exp: null }); }
@@ -75,7 +75,7 @@ Stmt
       return crearNodo('expresionStmt', { exp }); 
     }
 
-// ===== Inicialización del bucle For =====
+// ===== Inicializacio n del bucle For =====
 ForInit 
   = dcl:VarDcl { return dcl }
   / exp:Expresion _ ";" { return exp }
@@ -83,7 +83,7 @@ ForInit
 
 // ===== Palabras reservadas =====
 Reserved 
-  = "true" / "false" /"int" / "float" / "string" / "bool" / "char" / "var" / "if" / "else" / "while" / "for" 
+  = "true" / "false" /"int" / "float" / "string" / "boolean" / "char" / "var" / "if" / "else" / "while" / "for" 
   / "break" / "continue" / "return" / "null"
 
 // ===== Identificadores =====
@@ -91,27 +91,27 @@ Identificador
   = [a-zA-Z_][a-zA-Z0-9_]* !Reserved { return text(); } 
 
 // ===== Expresiones =====
-Expresion 
-  = Ternario
+Expresion
+  = Asignacion
 
-// ===== Operador Ternario =====
+// ===== Operador Ternario ===== 
 Ternario 
-  = cond:Logico _ "?" _ expTrue:Expresion _ ":" _ expFalse:Ternario { 
-      return crearNodo('ternario', { cond, expTrue, expFalse }); 
+  = cond:Logico _ "?" _ expTrue:Expresion _ ":" _ expFalse:Expresion { 
+      return crearNodo('ternario', { cond, stmtTrue: expTrue, stmtFalse: expFalse }); 
     }
   / Logico
 
-// ===== Operaciones Lógicas =====
+// ===== Operaciones Logicas =====
 Logico 
-  = left:Or tail:( _ "||" _ right:Or { return { op: "||", right }; })* {
-      return tail.reduce((left, { op, right }) => crearNodo('binaria', { op, izq: left, der: right }), left);
-    }
+  = Or
 
+// ===== Operador Or =====
 Or
-  = left:And tail:( _ "&&" _ right:And { return { op: "&&", right }; })* {
+  = left:And tail:( _ "||" _ right:And { return { op: "||", right }; })* {
       return tail.reduce((left, { op, right }) => crearNodo('binaria', { op, izq: left, der: right }), left);
     }
 
+// ===== Operador And =====
 And
   = left:Not tail:( _ "&&" _ right:Not { return { op: "&&", right }; })* {
       return tail.reduce((left, { op, right }) => crearNodo('binaria', { op, izq: left, der: right }), left);
@@ -136,15 +136,15 @@ Relacional
       return tail.reduce((left, { op, right }) => crearNodo('binaria', { op, izq: left, der: right }), left);
     }
 
-
-// ===== Asignación =====
+// ===== Asignacion =====
 Asignacion 
-  = id:Identificador _ op:OperadorAsignacion _ asgn:Asignacion { return crearNodo('asignacion', { id, op, asgn }); }
-  / Comparacion
+  = id:Identificador _ op:OperadorAsignacion _ exp:Ternario { return crearNodo('asignacion', { id, op, exp }); }
+  / Ternario
 
-// ===== Op. de Asignación =====
+// ===== Op. de Asignacion =====
 OperadorAsignacion 
   = "=" / "+=" / "-=" { return text(); }
+
 
 // ===== Operaciones de Suma y Resta =====
 Suma 
@@ -170,6 +170,10 @@ Unaria
   / Literal
   / Llamada
 
+// ===== Agrupacion de Expresiones =====
+Agrupacion
+  = "(" _ exp:Expresion _ ")" { return crearNodo('agrupacion', { exp }); }
+
 // ===== Literales =====
 Literal
   = Numero
@@ -183,6 +187,10 @@ Llamada
   = callee:Numero _ params:("(" args:Argumentos? ")" { return args })* {
       return params.reduce((callee, args) => crearNodo('llamada', { callee, args: args || [] }), callee);
     }
+
+// ===== Referencia a Variables =====
+ReferenciaVariable
+  = id:Identificador { return crearNodo('referenciaVariable', { id }); }
 
 // ===== Argumentos de llamadas =====
 Argumentos 

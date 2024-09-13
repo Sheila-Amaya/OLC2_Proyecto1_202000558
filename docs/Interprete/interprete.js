@@ -217,10 +217,23 @@ export class InterpreterVisitor extends BaseVisitor {
      *  
      * */
     visitTernario(node) {
-        const cond = node.cond.accept(this);
-        return cond ? node.expTrue.accept(this) : node.expFalse.accept(this);
-    }
+        const condicion = node.cond.accept(this);
+    
+        // val. tipo booleano
+        if (typeof condicion !== 'boolean') {
+            throw new Error(`La condición en el operador ternario debe ser booleana, pero se encontro: ${typeof condicion}`);
+        }
 
+        //eval. t o f
+        if (condicion) {
+            if (!node.stmtTrue) throw new Error('Expresion true esta indefinida en el operador ternario');
+            return node.stmtTrue.accept(this);
+        } else {
+            if (!node.stmtFalse) throw new Error('Expresio n false esta indefinida en el operador ternario');
+            return node.stmtFalse.accept(this);
+        }
+    }
+    
 
     /**
      * @type {BaseVisitor['visitDeclaracionVariable']}
