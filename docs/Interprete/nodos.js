@@ -503,6 +503,81 @@ export class Ternario extends Expresion {
     }
 }
     
+export class ParseInt extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {Expresion} options.exp Expresion a parsear
+    */
+    constructor({ exp }) {
+        super();
+        
+        /**
+         * Expresion a parsear
+         * @type {Expresion}
+        */
+        this.exp = exp;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitParseInt(this);
+    }
+}
+    
+export class ParseFloat extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {Expresion} options.exp Expresion a parsear
+    */
+    constructor({ exp }) {
+        super();
+        
+        /**
+         * Expresion a parsear
+         * @type {Expresion}
+        */
+        this.exp = exp;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitParseFloat(this);
+    }
+}
+    
+export class ToString extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {Expresion} options.exp Expresion a convertir
+    */
+    constructor({ exp }) {
+        super();
+        
+        /**
+         * Expresion a convertir
+         * @type {Expresion}
+        */
+        this.exp = exp;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitToString(this);
+    }
+}
+    
 export class Bloque extends Expresion {
 
     /**
@@ -747,4 +822,4 @@ export class Llamada extends Expresion {
     }
 }
     
-export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Ternario, Bloque, If, While, For, Break, Continue, Return, Llamada }
+export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Ternario, ParseInt, ParseFloat, ToString, Bloque, If, While, For, Break, Continue, Return, Llamada }

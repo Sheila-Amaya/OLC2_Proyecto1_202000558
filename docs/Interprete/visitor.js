@@ -46,6 +46,15 @@
  * @typedef {import('./docs/Interprete/nodos.js').Ternario} Ternario
 
 
+ * @typedef {import('./docs/Interprete/nodos.js').ParseInt} ParseInt
+
+
+ * @typedef {import('./docs/Interprete/nodos.js').ParseFloat} ParseFloat
+
+
+ * @typedef {import('./docs/Interprete/nodos.js').ToString} ToString
+
+
  * @typedef {import('./docs/Interprete/nodos.js').Bloque} Bloque
 
 
@@ -211,6 +220,33 @@ export class BaseVisitor {
      */
     visitTernario(node) {
         throw new Error('Metodo visitTernario no implementado');
+    }
+    
+
+    /**
+     * @param {ParseInt} node
+     * @returns {any}
+     */
+    visitParseInt(node) {
+        throw new Error('Metodo visitParseInt no implementado');
+    }
+    
+
+    /**
+     * @param {ParseFloat} node
+     * @returns {any}
+     */
+    visitParseFloat(node) {
+        throw new Error('Metodo visitParseFloat no implementado');
+    }
+    
+
+    /**
+     * @param {ToString} node
+     * @returns {any}
+     */
+    visitToString(node) {
+        throw new Error('Metodo visitToString no implementado');
     }
     
 

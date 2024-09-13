@@ -22,7 +22,10 @@
       'string': nodos.String,
       'char': nodos.Char,
       'null': nodos.Null,
-      'ternario': nodos.Ternario
+      'ternario': nodos.Ternario,
+      'parseInt': nodos.ParseInt,
+      'parseFloat': nodos.ParseFloat,
+      'ToString': nodos.ToString
     };
 
     const nodo = new tipos[tipoNodo](props);
@@ -81,7 +84,7 @@ ListaExpresiones
       return [primeraExp, ...siguientesExps]; 
     }
   
-// ===== Inicializacio n del bucle For =====
+// ===== Inicializacion del bucle For =====
 ForInit 
   = dcl:VarDcl { return dcl }
   / exp:Expresion _ ";" { return exp }
@@ -89,7 +92,7 @@ ForInit
 
 // ===== Palabras reservadas =====
 Reserved 
-  = "true" / "false" /"int" / "float" / "string" / "boolean" / "char" / "var" / "if" / "else" / "while" / "for" 
+  = "true" / "false" / "int" / "float" / "string" / "boolean" / "char" / "var" / "if" / "else" / "while" / "for" 
   / "break" / "continue" / "return" / "null"
 
 // ===== Identificadores =====
@@ -99,6 +102,20 @@ Identificador
 // ===== Expresiones =====
 Expresion
   = Asignacion
+  / FuncionesEmbebidas
+
+// ===== Asignacion =====
+Asignacion 
+  = id:Identificador _ op:OperadorAsignacion _ asgn:Asignacion { return crearNodo('asignacion', { id, op, asgn }); }
+  / Operacion
+
+// ===== Operador de Asignacion =====
+OperadorAsignacion 
+  = "=" / "+=" / "-=" { return text(); }
+
+// ===== Operaciones =====
+Operacion
+  = Ternario
 
 // ===== Operador Ternario ===== 
 Ternario 
@@ -142,39 +159,42 @@ Relacional
       return tail.reduce((left, { op, right }) => crearNodo('binaria', { op, izq: left, der: right }), left);
     }
 
-// ===== Asignacion =====
-Asignacion 
-  = id:Identificador _ op:OperadorAsignacion _ exp:Ternario { return crearNodo('asignacion', { id, op, exp }); }
-  / Ternario
-
-// ===== Op. de Asignacion =====
-OperadorAsignacion 
-  = "=" / "+=" / "-=" { return text(); }
-
-
 // ===== Operaciones de Suma y Resta =====
 Suma 
   = izq:Multiplicacion expansion:(_ op:("+" / "-") _ der:Multiplicacion { return { tipo: op, der }; })* { 
-      return expansion.reduce((operacionAnterior, operacionActual) => {
+      return expansion.reduce(
+        (operacionAnterior, operacionActual) => {
           const { tipo, der } = operacionActual;
           return crearNodo('binaria', { op: tipo, izq: operacionAnterior, der });
-      }, izq);
+        },
+        izq
+      );
     }
 
 // ===== Operaciones de Multiplicacion, Division y Modulo =====
 Multiplicacion 
   = izq:Unaria expansion:(_ op:("*" / "/" / "%") _ der:Unaria { return { tipo: op, der }; })* {
-      return expansion.reduce((operacionAnterior, operacionActual) => {
+      return expansion.reduce(
+        (operacionAnterior, operacionActual) => {
           const { tipo, der } = operacionActual;
           return crearNodo('binaria', { op: tipo, izq: operacionAnterior, der });
-      }, izq);
+        },
+        izq
+      );
     }
 
 // ===== Negacion Unaria =====
 Unaria 
   = "-" _ exp:Unaria { return crearNodo('unaria', { op: '-', exp: exp }); }
+  / Primaria
+
+// ===== Expresiones Primarias =====
+Primaria
+  = Agrupacion
+  / FuncionesEmbebidas
   / Literal
   / Llamada
+  / ReferenciaVariable
 
 // ===== Agrupacion de Expresiones =====
 Agrupacion
@@ -188,10 +208,37 @@ Literal
   / Char
   / "null" { return crearNodo('null', { tipo: 'null', valor: null }); }
 
+// ===== Funciones Embebidas =====
+FuncionesEmbebidas
+  = parseInt
+  / parseFloat
+  / toString
+
+// ===== Funciones Embebidas =====
+parseInt
+  = "parseInt" _ "(" _ exp:Expresion _ ")" {
+      return crearNodo('parseInt', { exp });
+    }
+
+parseFloat
+  = "parsefloat" _ "(" _ exp:Expresion _ ")" {
+      return crearNodo('parseFloat', { exp });
+    }
+
+toString
+  = "toString" _ "(" _ exp:Expresion _ ")" {
+      return crearNodo('ToString', { exp });
+    }
+
 // ===== Llamadas a funciones =====
 Llamada 
   = callee:Numero _ params:("(" args:Argumentos? ")" { return args })* {
-      return params.reduce((callee, args) => crearNodo('llamada', { callee, args: args || [] }), callee);
+      return params.reduce(
+        (callee, args) => {
+          return crearNodo('llamada', { callee, args: args || [] });
+        },
+        callee
+      );
     }
 
 // ===== Referencia a Variables =====
@@ -247,7 +294,7 @@ Char
 
 // ===== Tipos de datos permitidos =====
 Type 
-  = "int" / "float" / "string" / "boolean" / "char"/ "var" {  return text(); }
+  = "int" / "float" / "string" / "boolean" / "char" / "var" {  return text(); }
 
 // ===== Espacios en blanco y comentarios =====
 _ 

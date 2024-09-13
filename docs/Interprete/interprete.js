@@ -43,6 +43,7 @@ export class InterpreterVisitor extends BaseVisitor {
     visitOperacionBinaria(node) {
         const izq = node.izq.accept(this);
         const der = node.der.accept(this);
+        console.log(izq, der);
     
         if (izq === null || der === null) {
             console.error(`Operacion con null detectada en '${node.op}'`);
@@ -292,6 +293,51 @@ export class InterpreterVisitor extends BaseVisitor {
         this.salida += resultados.join(' ') + '\n';
     }
 
+    /**
+     * @type {BaseVisitor['visitParseInt']}
+     */
+    visitParseInt(node) {
+        const valor = node.exp.accept(this);
+        
+        if (typeof valor === 'string') {
+            const numero = parseInt(valor, 10);
+            if (isNaN(numero)) {
+                throw new Error(`Error: no se puede convertir '${valor}' a entero.`);
+            }
+            return numero;
+        } else {
+            throw new Error(`Error: tipo de dato incorrecto para parseInt, se esperaba un string pero se recibió '${typeof valor}'.`);
+        }
+    }
+
+    /**
+     * @type {BaseVisitor['visitParseFloat']}
+     *  
+     * */
+    visitParseFloat(node) {
+        const valor = node.exp.accept(this);
+        
+        if (typeof valor !== 'string') {
+            throw new Error(`se esperaba un string, pero se recibió ${typeof valor}`);
+        }
+    
+        const floatValue = parseFloat(valor);
+    
+        // no es un numero
+        if (isNaN(floatValue)) {
+            throw new Error(`no se puede convertir '${valor}' a un float`);
+        }
+
+        return floatValue;
+    }
+
+    /**
+     * @type {BaseVisitor['visitToString']}
+     */
+    visitToString(node) {
+        const valor = node.exp.accept(this);
+        return valor.toString();
+    }
 
     /**
       * @type {BaseVisitor['visitExpresionStmt']}
