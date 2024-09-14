@@ -73,6 +73,9 @@
  * @typedef {import('./docs/Interprete/nodos.js').ElseIf} ElseIf
 
 
+ * @typedef {import('./docs/Interprete/nodos.js').Switch} Switch
+
+
  * @typedef {import('./docs/Interprete/nodos.js').While} While
 
 
@@ -313,6 +316,15 @@ export class BaseVisitor {
      */
     visitElseIf(node) {
         throw new Error('Metodo visitElseIf no implementado');
+    }
+    
+
+    /**
+     * @param {Switch} node
+     * @returns {any}
+     */
+    visitSwitch(node) {
+        throw new Error('Metodo visitSwitch no implementado');
     }
     
 

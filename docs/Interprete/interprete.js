@@ -97,6 +97,7 @@ export class InterpreterVisitor extends BaseVisitor {
                 if (resultadoDiferente.tipo) {
                     node.tipo = resultadoDiferente.tipo;
                 }
+                return resultadoDiferente.valor;
             // Operadores relacionales
             case '>':
                 const resultadoMayorQue = Relacionales.mayorQue(izq, der);
@@ -121,6 +122,7 @@ export class InterpreterVisitor extends BaseVisitor {
                 if (resultadoMenorOIgual.tipo) {
                     node.tipo = resultadoMenorOIgual.tipo; 
                 }
+                return resultadoMenorOIgual.valor;
             // Operadores logicos
             case '&&':
                 const resultadoAnd = Logicos.and(izq, der);
@@ -479,6 +481,52 @@ export class InterpreterVisitor extends BaseVisitor {
     }
 
     /**
+     * @type {BaseVisitor['visitSwitch']}
+     */
+    visitSwitch(node) {
+        const switchExp = node.exp.accept(this);
+        let ejecutar = false;
+    
+        // Iterar a traves de los casos
+        for (const caseNode of node.cases) {
+            const caseExp = caseNode.exp.accept(this);
+    
+            // Si se ha encontrado un caso que coincide con la expresión switch
+            if (ejecutar || switchExp.valor === caseExp.valor) {
+                ejecutar = true;
+                try {
+                    // Ejecutar las instrucciones del caso
+                    for (const stmt of caseNode.stmt) {
+                        stmt.accept(this);
+                    }
+                } catch (error) {
+                    // sale del switch si hay una excepción de tipo Break
+                    if (error instanceof BreakException) {
+                        return; // Termina la ejecucion del switch
+                    } else {
+                        throw error;
+                    }
+                }
+            }
+        }
+    
+        // Si no hubo coincidencia y existe un caso por defecto
+        if (!ejecutar && node.defau) {
+            try {
+                for (const stmt of node.defau.stmt) {
+                    stmt.accept(this);
+                }
+            } catch (error) {
+                // Si hay una excepción de tipo Break, salir del switch
+                if (!(error instanceof BreakException)) {
+                    throw error; 
+                }
+            }
+        }
+    }
+
+
+    /**
      * @type {BaseVisitor['visitWhile']}
      */
     visitWhile(node) {
@@ -491,7 +539,7 @@ export class InterpreterVisitor extends BaseVisitor {
         } catch (error) {
             this.entornoActual = entornoConElQueEmpezo;
 
-            if (error instanceof BreakException) {
+            if (error instanceof BreakException) { // Maneja el break y terminar el bucle
                 console.log('break');
                 return
             }
@@ -499,7 +547,6 @@ export class InterpreterVisitor extends BaseVisitor {
             if (error instanceof ContinueException) {
                 return this.visitWhile(node);
             }
-
             throw error;
 
         }
@@ -509,29 +556,44 @@ export class InterpreterVisitor extends BaseVisitor {
      * @type {BaseVisitor['visitFor']}
      */
     visitFor(node) {
-        // this.prevContinue = node.inc;
+        // Guardar el incremento anterior
         const incrementoAnterior = this.prevContinue;
         this.prevContinue = node.inc;
-
+    
         const forTraducido = new nodos.Bloque({
             dcls: [
                 node.init,
                 new nodos.While({
-                    cond: node.cond,
+                    cond: node.cond, 
                     stmt: new nodos.Bloque({
                         dcls: [
-                            node.stmt,
-                            node.inc
+                            node.stmt, // Cuerpo del for
+                            node.inc   // Incremento del for
                         ]
                     })
                 })
             ]
-        })
-
-        forTraducido.accept(this);
-
-        this.prevContinue = incrementoAnterior;
+        });
+    
+        try {
+            forTraducido.accept(this); 
+        } catch (error) {
+            if (error instanceof BreakException) {
+                // maneja el break y termina el bucle
+                console.log('break');
+                return;
+            } else if (error instanceof ContinueException) {
+                // Maneja el continue y continua con la siguiente ite.
+                node.inc.accept(this);
+                return this.visitFor(node);
+            } else {
+                throw error; 
+            }
+        } finally {
+            this.prevContinue = incrementoAnterior;
+        }
     }
+    
 
     /**
      * @type {BaseVisitor['visitBreak']}

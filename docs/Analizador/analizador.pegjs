@@ -13,6 +13,7 @@
       'bloque': nodos.Bloque,
       'if': nodos.If,
       'ElseIf': nodos.ElseIf,
+      'switch': nodos.Switch,
       'while': nodos.While,
       'for': nodos.For,
       'break': nodos.Break,
@@ -55,7 +56,8 @@ VarDcl
 Stmt 
   = printStmt
   / bloqueStmt
-  / IfStmt
+  / IfStmt  
+  / Switch
   / whileStmt
   / forStmt
   / breakStmt
@@ -90,10 +92,16 @@ ElseIfBranch
     }
 
 // ===== Sentencia Switch =====
+Switch = "switch" _ "(" _ exp:Expresion _ ")" _ "{" _ cases:Case* defau:Default? _ "}" 
+{ return crearNodo('switch', { exp, cases, defau }) }
 
+Case = "case" _ exp:Expresion _ ":" _ stmt:Declaracion* {   
+  return { exp, stmt } }
 
+Default = "default" _ ":" _ stmt:Declaracion* { 
+  return { stmt } }
 
-// ===== Sentencia While =====
+// ===== Sentencia While ====
 whileStmt
 = "while" _ "(" _ cond:Expresion _ ")" _ stmt:Stmt { 
       return crearNodo('while', { cond, stmt }); 
@@ -141,7 +149,6 @@ ListaExpresiones
       return [primeraExp, ...siguientesExps]; 
     }
   
-
 
 // ===== Palabras reservadas =====
 Reserved 

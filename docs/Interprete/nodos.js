@@ -760,6 +760,47 @@ export class ElseIf extends Expresion {
     }
 }
     
+export class Switch extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {Expresion} options.exp Expresion a evaluar
+ * @param {Array<{exp: Expresion, stmt: Expresion[]}>} options.cases Casos del switch
+ * @param {stmt: Expresion[]|undefined} options.defau Caso por defecto
+    */
+    constructor({ exp, cases, defau }) {
+        super();
+        
+        /**
+         * Expresion a evaluar
+         * @type {Expresion}
+        */
+        this.exp = exp;
+
+
+        /**
+         * Casos del switch
+         * @type {Array<{exp: Expresion, stmt: Expresion[]}>}
+        */
+        this.cases = cases;
+
+
+        /**
+         * Caso por defecto
+         * @type {stmt: Expresion[]|undefined}
+        */
+        this.defau = defau;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitSwitch(this);
+    }
+}
+    
 export class While extends Expresion {
 
     /**
@@ -938,4 +979,4 @@ export class Llamada extends Expresion {
     }
 }
     
-export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Ternario, ParseInt, ParseFloat, ToString, ToLowerCase, ToUpperCase, TypeOf, Bloque, If, ElseIf, While, For, Break, Continue, Return, Llamada }
+export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Ternario, ParseInt, ParseFloat, ToString, ToLowerCase, ToUpperCase, TypeOf, Bloque, If, ElseIf, Switch, While, For, Break, Continue, Return, Llamada }
