@@ -57,21 +57,11 @@ Stmt
   / bloqueStmt
   / IfStmt
   / whileStmt
-  / "for" _ "(" _ init:ForInit _ cond:Expresion _ ";" _ inc:Expresion _ ")" _ stmt:Stmt {
-      return crearNodo('for', { init, cond, inc, stmt });
-    }
-  / "break" _ ";" { 
-      return crearNodo('break'); 
-    }
-  / "continue" _ ";" { 
-      return crearNodo('continue'); 
-    }
-  / "return" _ exp:Expresion? _ ";" { 
-      return crearNodo('return', { exp }); 
-    }
-  / exp:Expresion _ ";" { 
-      return crearNodo('expresionStmt', { exp }); 
-    }
+  / forStmt
+  / breakStmt
+  / continueStmt
+  / returnStmt
+  / expresionStmt
 
 // ===== Sentencia Print =====
 printStmt
@@ -99,12 +89,51 @@ ElseIfBranch
       return crearNodo('ElseIf', { cond, stmt });
     }
 
+// ===== Sentencia Switch =====
+
+
+
 // ===== Sentencia While =====
 whileStmt
 = "while" _ "(" _ cond:Expresion _ ")" _ stmt:Stmt { 
       return crearNodo('while', { cond, stmt }); 
     }
 
+// ===== Sentencia For =====
+forStmt
+  = "for" _ "(" _ init:ForInit _ cond:Expresion _ ";" _ inc:Expresion _ ")" _ stmt:Stmt {
+      return crearNodo('for', { init, cond, inc, stmt });
+    }
+
+// ===== Inicializacion del bucle For =====
+ForInit 
+  = dcl:VarDcl { return dcl }
+  / exp:Expresion _ ";" { return exp }
+  / ";" { return null }
+
+// ===== Sentencia Break =====
+breakStmt
+  = "break" _ ";" { 
+      return crearNodo('break'); 
+    }
+
+// ===== Sentencia Continue =====
+continueStmt
+  = "continue" _ ";" { 
+      return crearNodo('continue'); 
+    }
+
+// ===== Sentencia Return =====
+returnStmt
+  = "return" _ exp:Expresion? _ ";" { 
+      return crearNodo('return', { exp }); 
+    }
+
+// ===== Sentencia Expresion =====
+expresionStmt
+  = exp:Expresion _ ";" { 
+      return crearNodo('expresionStmt', { exp }); 
+    }
 
 // ===== Lista de expresiones =====
 ListaExpresiones 
@@ -112,11 +141,7 @@ ListaExpresiones
       return [primeraExp, ...siguientesExps]; 
     }
   
-// ===== Inicializacion del bucle For =====
-ForInit 
-  = dcl:VarDcl { return dcl }
-  / exp:Expresion _ ";" { return exp }
-  / ";" { return null }
+
 
 // ===== Palabras reservadas =====
 Reserved 

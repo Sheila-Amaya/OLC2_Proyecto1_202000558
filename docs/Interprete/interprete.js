@@ -213,30 +213,6 @@ export class InterpreterVisitor extends BaseVisitor {
     }
 
     /**
-     *  
-     * @type {BaseVisitor['visitTernario']}
-     *  
-     * */
-    visitTernario(node) {
-        const condicion = node.cond.accept(this);
-    
-        // val. tipo booleano
-        if (typeof condicion !== 'boolean') {
-            throw new Error(`La condición en el operador ternario debe ser booleana, pero se encontro: ${typeof condicion}`);
-        }
-
-        //eval. t o f
-        if (condicion) {
-            if (!node.stmtTrue) throw new Error('Expresion true esta indefinida en el operador ternario');
-            return node.stmtTrue.accept(this);
-        } else {
-            if (!node.stmtFalse) throw new Error('Expresio n false esta indefinida en el operador ternario');
-            return node.stmtFalse.accept(this);
-        }
-    }
-    
-
-    /**
      * @type {BaseVisitor['visitDeclaracionVariable']}
      */    
     visitDeclaracionVariable(node) {
@@ -290,6 +266,79 @@ export class InterpreterVisitor extends BaseVisitor {
         });
         
         this.salida += resultados.join(' ') + '\n'; // Concatena los resultados y añade un salto de línea
+    }
+
+    /**
+      * @type {BaseVisitor['visitExpresionStmt']}
+      */
+    visitExpresionStmt(node) {
+        node.exp.accept(this);
+    }
+
+    /**
+     * @type {BaseVisitor['visitAsignacion']}
+     */
+    visitAsignacion(node) {
+        const nombreVariable = node.id;
+        const valorAsignado = node.asgn.accept(this);
+        const tipoValorAsignado = obtenerTipo(valorAsignado);
+    
+        // Obtener tipo de la variable antes de asignar
+        const tipoVariable = this.entornoActual.getTipoVariable(nombreVariable);
+    
+        Asignacion.setEntorno(this.entornoActual);
+    
+        // Verificar si la variable es de tipo null y aceptar cualquier tipo
+        if (tipoVariable === 'null') {
+            this.entornoActual.assignVariable(nombreVariable, valorAsignado);
+            this.entornoActual.tipos[nombreVariable] = tipoValorAsignado; // Actualiza el tipo a partir del valor asignado
+            console.log(`Variable '${nombreVariable}' asignada con valor ${valorAsignado} y tipo ${tipoValorAsignado}`);
+            return;
+        }
+    
+        if (tipoVariable !== tipoValorAsignado) {
+            throw new Error(`Tipos incompatibles. No se puede asignar un valor de tipo '${tipoValorAsignado}' a una variable de tipo '${tipoVariable}'`);
+        }
+    
+        switch (node.op) {
+            case "=":
+                Asignacion.AsignacionEstandar(nombreVariable, valorAsignado);
+                break;
+    
+            case "+=":
+                Asignacion.AsignacionSuma(nombreVariable, valorAsignado);
+                break;
+    
+            case "-=":
+                Asignacion.AsignacionResta(nombreVariable, valorAsignado);
+                break;
+    
+            default:
+                throw new Error(`Operador de asignación no soportado: ${node.op}`);
+        }
+    }
+
+    /**
+     *  
+     * @type {BaseVisitor['visitTernario']}
+     *  
+     * */
+    visitTernario(node) {
+        const condicion = node.cond.accept(this);
+    
+        // val. tipo booleano
+        if (typeof condicion !== 'boolean') {
+            throw new Error(`La condición en el operador ternario debe ser booleana, pero se encontro: ${typeof condicion}`);
+        }
+
+        //eval. t o f
+        if (condicion) {
+            if (!node.stmtTrue) throw new Error('Expresion true esta indefinida en el operador ternario');
+            return node.stmtTrue.accept(this);
+        } else {
+            if (!node.stmtFalse) throw new Error('Expresio n false esta indefinida en el operador ternario');
+            return node.stmtFalse.accept(this);
+        }
     }
 
     /**
@@ -377,56 +426,6 @@ export class InterpreterVisitor extends BaseVisitor {
     }
 
     /**
-      * @type {BaseVisitor['visitExpresionStmt']}
-      */
-    visitExpresionStmt(node) {
-        node.exp.accept(this);
-    }
-
-    /**
-     * @type {BaseVisitor['visitAsignacion']}
-     */
-    visitAsignacion(node) {
-        const nombreVariable = node.id;
-        const valorAsignado = node.asgn.accept(this);
-        const tipoValorAsignado = obtenerTipo(valorAsignado);
-    
-        // Obtener tipo de la variable antes de asignar
-        const tipoVariable = this.entornoActual.getTipoVariable(nombreVariable);
-    
-        Asignacion.setEntorno(this.entornoActual);
-    
-        // Verificar si la variable es de tipo null y aceptar cualquier tipo
-        if (tipoVariable === 'null') {
-            this.entornoActual.assignVariable(nombreVariable, valorAsignado);
-            this.entornoActual.tipos[nombreVariable] = tipoValorAsignado; // Actualiza el tipo a partir del valor asignado
-            console.log(`Variable '${nombreVariable}' asignada con valor ${valorAsignado} y tipo ${tipoValorAsignado}`);
-            return;
-        }
-    
-        if (tipoVariable !== tipoValorAsignado) {
-            throw new Error(`Tipos incompatibles. No se puede asignar un valor de tipo '${tipoValorAsignado}' a una variable de tipo '${tipoVariable}'`);
-        }
-    
-        switch (node.op) {
-            case "=":
-                Asignacion.AsignacionEstandar(nombreVariable, valorAsignado);
-                break;
-    
-            case "+=":
-                Asignacion.AsignacionSuma(nombreVariable, valorAsignado);
-                break;
-    
-            case "-=":
-                Asignacion.AsignacionResta(nombreVariable, valorAsignado);
-                break;
-    
-            default:
-                throw new Error(`Operador de asignación no soportado: ${node.op}`);
-        }
-    }
-
-    /**
      * @type {BaseVisitor['visitBloque']}
      */
     visitBloque(node) {
@@ -473,7 +472,6 @@ export class InterpreterVisitor extends BaseVisitor {
      * */
     visitElseIf(node) {
         const cond = node.cond.accept(this);
-
         // condicion verdadera, eval stmt
         if (cond) {
             node.stmt.accept(this);
