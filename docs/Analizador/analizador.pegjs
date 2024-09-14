@@ -53,16 +53,10 @@ VarDcl
 
 // ===== Sentencias =====
 Stmt 
-  = "System.out.println(" _ listaExpresiones:ListaExpresiones? _ ")" _ ";" {
-      return crearNodo('print', { listaExpresiones: listaExpresiones || [] });
-    }
-  / "{" _ dcls:Declaracion* _ "}" { 
-      return crearNodo('bloque', { dcls }); 
-    }
-  /  IfElseIf
-  / "while" _ "(" _ cond:Expresion _ ")" _ stmt:Stmt { 
-      return crearNodo('while', { cond, stmt }); 
-    }
+  = printStmt
+  / bloqueStmt
+  / IfStmt
+  / whileStmt
   / "for" _ "(" _ init:ForInit _ cond:Expresion _ ";" _ inc:Expresion _ ")" _ stmt:Stmt {
       return crearNodo('for', { init, cond, inc, stmt });
     }
@@ -79,9 +73,21 @@ Stmt
       return crearNodo('expresionStmt', { exp }); 
     }
 
+// ===== Sentencia Print =====
+printStmt
+  = "System.out.println(" _ listaExpresiones:ListaExpresiones? _ ")" _ ";" {
+      return crearNodo('print', { listaExpresiones: listaExpresiones || [] });
+    }
+
+// ===== Sentencia Bloque =====
+bloqueStmt
+  = "{" _ dcls:Declaracion* _ "}" { 
+      return crearNodo('bloque', { dcls }); 
+    }
+
 // ===== Sentencia If =====
 // ===== If, Else If, Else =====
-IfElseIf
+IfStmt
   = "if" _ "(" _ cond:Expresion _ ")" _ stmtTrue:Stmt 
     elseIfBranches:ElseIfBranch* 
     stmtFalse:(_ "else" _ stmtFalse:Stmt { return stmtFalse })? { 
@@ -91,6 +97,12 @@ IfElseIf
 ElseIfBranch
   = _ "else" _ "if" _ "(" _ cond:Expresion _ ")" _ stmt:Stmt { 
       return crearNodo('ElseIf', { cond, stmt });
+    }
+
+// ===== Sentencia While =====
+whileStmt
+= "while" _ "(" _ cond:Expresion _ ")" _ stmt:Stmt { 
+      return crearNodo('while', { cond, stmt }); 
     }
 
 

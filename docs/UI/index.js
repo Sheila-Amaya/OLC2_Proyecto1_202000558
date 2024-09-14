@@ -179,7 +179,7 @@ function generateSymbolTableReport() {
 // Funcionalidad para logear mensajes a la consola
 function logToConsole(message) {
     const consoleElement = document.getElementById('console');
-    consoleElement.innerHTML += `${message.replace(/\n/g, '<br/>')}`;
+    consoleElement.innerHTML += `${message.replace(/\n/g, '<br/>').replace(/ /g, '&nbsp;')}`;
 }
 
 // Inicializar el editor vacío al cargar la página
