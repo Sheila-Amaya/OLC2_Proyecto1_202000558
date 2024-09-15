@@ -257,7 +257,7 @@ export class InterpreterVisitor extends BaseVisitor {
             try {
                 this.entornoActual.setArrayComoCopia(nombreArray, node.copyFrom);
                 const valoresCopia = this.entornoActual.getVariable(nombreArray);
-                console.log(`Declarando array ${nombreArray} como copia de ${node.copyFrom}, con valores: ${JSON.stringify(valoresCopia)}.`);
+                console.log(`Declarando array ${nombreArray} como copia de ${node.copyFrom}, con valores: ${JSON.stringify(valoresCopia)}.`); //para pruebas
             } catch (error) {
                 console.error(`Error copiando array: ${error.message}`);
             }
@@ -514,6 +514,65 @@ export class InterpreterVisitor extends BaseVisitor {
         const valor = node.exp.accept(this);
         const tipo = obtenerTipo(valor);
         return tipo;
+    }
+
+    /**
+     * @type {BaseVisitor['visitIndexOf']}
+     */
+    visitIndexOf(node) {
+        const nombreArray = node.array; // node.array debe ser un identificador
+    
+        // obt. el array desde el entorno actual con el id
+        const array = this.entornoActual.getVariable(nombreArray);
+    
+        // val. si es un array
+        if (!Array.isArray(array)) {
+            throw new Error(`'${nombreArray}' no es un array o no está definido.`);
+        }
+    
+        if (!node.argumento) {
+            throw new Error(`El argumento para 'indexOf' en el array '${nombreArray}' es indefinido.`);
+        }
+    
+        // eval. el argumento para buscar en el array (elemento)
+        const argumento = node.argumento.accept(this);
+    
+        // indice del primer elemento encontrado que coincida con el elemento
+        const index = array.indexOf(argumento);
+    
+        console.log(`IndexOf: Buscando '${argumento}' en el array '${nombreArray}', índice encontrado: ${index}.`);
+    
+        return index;
+    }
+
+    /**
+     * @type {BaseVisitor['visitJoin']}
+     */
+    visitJoin(node) {
+        const array = this.entornoActual.getVariable(node.array);
+
+        if (!Array.isArray(array)) {
+            throw new Error(`'${node.array}' no es un array o no está definido.`);
+        }
+
+        // Une los elementos del array en un string separado por comas
+        const resultado = array.join(',');
+
+        console.log(`Join: Uniendo elementos del array '${node.array}', resultado: '${resultado}'.`);
+        return resultado;
+    }
+
+    /**
+     * @type {BaseVisitor['visitLength']}
+     */
+    visitLength(node) {
+        const array = this.entornoActual.getVariable(node.array);
+
+        if (!Array.isArray(array)) {
+            throw new Error(`'${node.array}' no es un array.`);
+        }
+
+        return array.length;
     }
 
     /**

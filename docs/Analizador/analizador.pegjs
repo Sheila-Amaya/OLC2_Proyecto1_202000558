@@ -13,6 +13,7 @@
       'arrayAccess': nodos.ArrayAccess,
       'arrayAssign': nodos.ArrayAssign,
       'asignacion': nodos.Asignacion,
+      'length': nodos.Length,
       'bloque': nodos.Bloque,
       'if': nodos.If,
       'ElseIf': nodos.ElseIf,
@@ -29,6 +30,8 @@
       'char': nodos.Char,
       'null': nodos.Null,
       'ternario': nodos.Ternario,
+      'indexOf': nodos.IndexOf,
+      'join': nodos.Join,
       'parseInt': nodos.ParseInt,
       'parseFloat': nodos.ParseFloat,
       'ToString': nodos.ToString,
@@ -200,6 +203,12 @@ Asignacion
 OperadorAsignacion 
   = "=" / "+=" / "-=" { return text(); }
 
+// ===== Acceso a Atributo Length =====
+AtributoLength
+  = id:Identificador _ "." _ "length" {
+      return crearNodo('length', { array: id });
+    }
+
 // ===== Asignación de Array =====
 ArrayAssign
   = id:Identificador _ "[" _ indice:Expresion _ "]" _ "=" _ valor:Expresion { 
@@ -290,6 +299,7 @@ Unaria
 // ===== Expresiones Primarias =====
 Primaria
   = Agrupacion
+  / AtributoLength
   / FuncionesEmbebidas
   / Literal
   / Llamada
@@ -315,6 +325,20 @@ FuncionesEmbebidas
   / toLowerCase
   / toUpperCase
   / typeOf
+  / indexOf
+  / join
+
+// ===== Funcion indexOf =====
+indexOf
+  = id:Identificador _ "." _ "indexOf" _ "(" _ argumento:Expresion _ ")" {
+      return crearNodo('indexOf', { array: id, argumento });
+  }
+
+// ===== Funcion join =====
+join
+  = id:Identificador _ "." _ "join" _ "(" _ ")" {
+      return crearNodo('join', { array: id });
+    }
 
 // ===== Funciones Embebidas =====
 parseInt

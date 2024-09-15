@@ -552,6 +552,31 @@ export class ArrayAccess extends Expresion {
     }
 }
     
+export class Length extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {string} options.array Identificador del array del cual se obtiene la longitud
+    */
+    constructor({ array }) {
+        super();
+        
+        /**
+         * Identificador del array del cual se obtiene la longitud
+         * @type {string}
+        */
+        this.array = array;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitLength(this);
+    }
+}
+    
 export class Asignacion extends Expresion {
 
     /**
@@ -781,6 +806,64 @@ export class TypeOf extends Expresion {
      */
     accept(visitor) {
         return visitor.visitTypeOf(this);
+    }
+}
+    
+export class IndexOf extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {Expresion} options.array id del array en el que se busca la coincidencia
+ * @param {Expresion} options.argumento Expresión a buscar dentro del array
+    */
+    constructor({ array, argumento }) {
+        super();
+        
+        /**
+         * id del array en el que se busca la coincidencia
+         * @type {Expresion}
+        */
+        this.array = array;
+
+
+        /**
+         * Expresión a buscar dentro del array
+         * @type {Expresion}
+        */
+        this.argumento = argumento;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitIndexOf(this);
+    }
+}
+    
+export class Join extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {string} options.array Identificador del array a unir
+    */
+    constructor({ array }) {
+        super();
+        
+        /**
+         * Identificador del array a unir
+         * @type {string}
+        */
+        this.array = array;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitJoin(this);
     }
 }
     
@@ -1159,4 +1242,4 @@ export class Llamada extends Expresion {
     }
 }
     
-export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, DeclaracionArray, ReferenciaVariable, Print, ExpresionStmt, ArrayAssign, ArrayAccess, Asignacion, Ternario, ParseInt, ParseFloat, ToString, ToLowerCase, ToUpperCase, TypeOf, Bloque, If, ElseIf, Switch, While, For, ForEach, Break, Continue, Return, Llamada }
+export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, DeclaracionArray, ReferenciaVariable, Print, ExpresionStmt, ArrayAssign, ArrayAccess, Length, Asignacion, Ternario, ParseInt, ParseFloat, ToString, ToLowerCase, ToUpperCase, TypeOf, IndexOf, Join, Bloque, If, ElseIf, Switch, While, For, ForEach, Break, Continue, Return, Llamada }

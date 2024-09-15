@@ -49,6 +49,9 @@
  * @typedef {import('./docs/Interprete/nodos.js').ArrayAccess} ArrayAccess
 
 
+ * @typedef {import('./docs/Interprete/nodos.js').Length} Length
+
+
  * @typedef {import('./docs/Interprete/nodos.js').Asignacion} Asignacion
 
 
@@ -71,6 +74,12 @@
 
 
  * @typedef {import('./docs/Interprete/nodos.js').TypeOf} TypeOf
+
+
+ * @typedef {import('./docs/Interprete/nodos.js').IndexOf} IndexOf
+
+
+ * @typedef {import('./docs/Interprete/nodos.js').Join} Join
 
 
  * @typedef {import('./docs/Interprete/nodos.js').Bloque} Bloque
@@ -260,6 +269,15 @@ export class BaseVisitor {
     
 
     /**
+     * @param {Length} node
+     * @returns {any}
+     */
+    visitLength(node) {
+        throw new Error('Metodo visitLength no implementado');
+    }
+    
+
+    /**
      * @param {Asignacion} node
      * @returns {any}
      */
@@ -328,6 +346,24 @@ export class BaseVisitor {
      */
     visitTypeOf(node) {
         throw new Error('Metodo visitTypeOf no implementado');
+    }
+    
+
+    /**
+     * @param {IndexOf} node
+     * @returns {any}
+     */
+    visitIndexOf(node) {
+        throw new Error('Metodo visitIndexOf no implementado');
+    }
+    
+
+    /**
+     * @param {Join} node
+     * @returns {any}
+     */
+    visitJoin(node) {
+        throw new Error('Metodo visitJoin no implementado');
     }
     
 
