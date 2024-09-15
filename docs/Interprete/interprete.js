@@ -141,7 +141,6 @@ export class InterpreterVisitor extends BaseVisitor {
         }
     }
 
-
     /**
       * @type {BaseVisitor['visitOperacionUnaria']}
       */
@@ -244,6 +243,38 @@ export class InterpreterVisitor extends BaseVisitor {
     
         this.entornoActual.setVariable(nombreVariable, valorInicial, node.tipo || tipoDefinido);
         console.log(`Variable '${nombreVariable}' declarada con valor ${valorInicial} y tipo ${node.tipo || tipoDefinido}`);
+    }
+
+    /** 
+     * declacion array :D
+     *  @type {BaseVisitor['visitDeclaracionArray']}
+     */
+    visitDeclaracionArray(node) {
+        const nombreArray = node.id;
+        const tipoArray = node.tipo;
+    
+        if (node.copyFrom) {
+            // permite copiar un array
+            try {
+                this.entornoActual.setArrayComoCopia(nombreArray, node.copyFrom);
+                const valoresCopia = this.entornoActual.getVariable(nombreArray);
+                console.log(`Declarando array ${nombreArray} como copia de ${node.copyFrom}, con valores: ${JSON.stringify(valoresCopia)}.`);
+            } catch (error) {
+                console.error(`Error copiando array: ${error.message}`);
+            }
+        } else if (node.arrayInit) {
+            this.entornoActual.setArray(nombreArray, node.arrayInit.map(v => v.valor), tipoArray); // Inicializacion con valores por defecto
+            console.log(`Declarando array ${nombreArray} de tipo ${tipoArray} con valores iniciales: ${JSON.stringify(node.arrayInit.map(v => v.valor))}.`);
+        } else if (node.tam !== null && node.tam.valor !== undefined) {
+            // Inicialización con tamaño
+            const tamano = node.tam.valor;  // Acceder al valor numerico [5]
+            const defaultValue = this.entornoActual.getDefaultValue(tipoArray);
+            const arrayInicializado = Array(tamano).fill(defaultValue);
+            this.entornoActual.setArray(nombreArray, arrayInicializado, tipoArray);
+            console.log(`Declarando array ${nombreArray} de tipo ${tipoArray} con tamaño ${tamano}, llenado con valores por defecto: ${defaultValue}.`);
+        } else {
+            throw new Error(`Error en la declaración del array '${nombreArray}': se debe definir con inicializacion, tamaño o copia.`);
+        }
     }
 
     /**

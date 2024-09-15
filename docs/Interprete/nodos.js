@@ -346,6 +346,63 @@ export class DeclaracionVariable extends Expresion {
     }
 }
     
+export class DeclaracionArray extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {string} options.tipo Tipo del array
+ * @param {string} options.id Identificador del array
+ * @param {Expresion[]|null} options.arrayInit Expresion del array
+ * @param {number|null} options.tam Tamano del array especifico
+ * @param {string|null} options.copyFrom Identificador del array a copiar
+    */
+    constructor({ tipo, id, arrayInit, tam, copyFrom }) {
+        super();
+        
+        /**
+         * Tipo del array
+         * @type {string}
+        */
+        this.tipo = tipo;
+
+
+        /**
+         * Identificador del array
+         * @type {string}
+        */
+        this.id = id;
+
+
+        /**
+         * Expresion del array
+         * @type {Expresion[]|null}
+        */
+        this.arrayInit = arrayInit;
+
+
+        /**
+         * Tamano del array especifico
+         * @type {number|null}
+        */
+        this.tam = tam;
+
+
+        /**
+         * Identificador del array a copiar
+         * @type {string|null}
+        */
+        this.copyFrom = copyFrom;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitDeclaracionArray(this);
+    }
+}
+    
 export class ReferenciaVariable extends Expresion {
 
     /**
@@ -979,4 +1036,4 @@ export class Llamada extends Expresion {
     }
 }
     
-export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Ternario, ParseInt, ParseFloat, ToString, ToLowerCase, ToUpperCase, TypeOf, Bloque, If, ElseIf, Switch, While, For, Break, Continue, Return, Llamada }
+export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, DeclaracionArray, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Ternario, ParseInt, ParseFloat, ToString, ToLowerCase, ToUpperCase, TypeOf, Bloque, If, ElseIf, Switch, While, For, Break, Continue, Return, Llamada }

@@ -6,6 +6,7 @@
       'binaria': nodos.OperacionBinaria,
       'unaria': nodos.OperacionUnaria,
       'declaracionVariable': nodos.DeclaracionVariable,
+      'declaracionArray': nodos.DeclaracionArray,
       'referenciaVariable': nodos.ReferenciaVariable,
       'print': nodos.Print,
       'expresionStmt': nodos.ExpresionStmt,
@@ -45,12 +46,34 @@ programa = _ dcl:Declaracion* _ { return dcl }
 // ===== Declaraciones =====
 Declaracion 
   = dcl:VarDcl _ { return dcl }
+  / arrayDcl:ArrayDcl _ { return arrayDcl }
   / stmt:Stmt _  { return stmt }
 
 // ===== Declaracion de variables =====
 VarDcl 
   = tipo:Type _ id:Identificador _ "=" _ exp:Expresion _ ";" { return crearNodo('declaracionVariable', { tipo, id, exp }); }
   / tipo:Type _ id:Identificador _ ";"                       { return crearNodo('declaracionVariable', { tipo, id, exp: null }); }
+
+// ===== Declaracion de arrays =====
+ArrayDcl
+  = arrayTipo:ArrayType _ id:Identificador _ "=" _ arrayInit:ArrayInitialization _ ";" { 
+      return crearNodo('declaracionArray', { tipo: arrayTipo, id, arrayInit }); 
+    }
+  / arrayTipo:ArrayType _ id:Identificador _ "=" _ "new" _ elemTipo:Type _ "[" _ tam:Num_entero _ "]" _ ";" { 
+      return crearNodo('declaracionArray', { tipo: `${elemTipo}`, id, tam }); 
+    }
+  / arrayTipo:ArrayType _ id:Identificador _ "=" _ copia:Identificador _ ";" { 
+      // Nueva regla para la copia de arrays
+      return crearNodo('declaracionArray', { tipo: arrayTipo, id, copyFrom: copia }); 
+    }
+
+// ===== Tipo de Array =====
+ArrayType
+  = tipo:Type  "[]" { return tipo; }
+
+// ===== Inicialización de Arrays =====
+ArrayInitialization
+  = "{" _ valores:ListaExpresiones _ "}" { return valores || []; }
 
 // ===== Sentencias =====
 Stmt 
@@ -262,8 +285,8 @@ Agrupacion
 
 // ===== Literales =====
 Literal
-  = Numero
-  / Booleano
+  = Booleano
+  / Numero
   / String
   / Char
   / "null" { return crearNodo('null', { tipo: 'null', valor: null }); }

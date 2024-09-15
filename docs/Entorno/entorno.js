@@ -136,4 +136,98 @@ export class Entorno {
                 return null;
         }
     }
+
+    /**
+     * para arrays
+     * @param {string} tipo
+     * @returns {any}
+     */
+
+    getDefaultValue(tipo) {
+        switch(tipo) {
+            case 'int':    
+                return 0;
+            case 'float': 
+                return 0.01;
+            case 'string': 
+                return '';
+            case 'boolean':     
+                return false;
+            case 'char':    
+                return '\0';
+            default:    
+                return null; 
+        }
+    }
+
+    /**
+     * Inicializa un array en el entorno
+     * @param {string} nombre
+     * @param {Array} valores
+     * @param {string} tipo
+     */
+    setArray(nombre, valores, tipo) {
+        if (this.existeVariableLocal(nombre)) {
+            throw new Error(`Array '${nombre}' ya definido en este entorno.`);
+        }
+        // Verifica que todos los elementos en 'valores' coincidan con el tipo del array
+        if (!valores.every(valor => obtenerTipo(valor) === tipo)) {
+            throw new Error(`Los valores del array '${nombre}' no coinciden con el tipo '${tipo}'.`);
+        }
+        this.valores[nombre] = valores;
+        this.tipos[nombre] = `array of ${tipo}`;
+    }
+
+    /**
+     * Inicializa un array reservando tamaño
+     * @param {string} nombre
+     * @param {number} tamano
+     * @param {string} tipo
+     */
+    setArrayConTamano(nombre, tamano, tipo) {
+        if (this.existeVariableLocal(nombre)) {
+            throw new Error(`Array '${nombre}' ya definido en este entorno.`);
+        }
+        if (tamano < 0) {
+            throw new Error(`El tamaño del array '${nombre}' no puede ser negativo.`);
+        }
+        const valorPorDefecto = this.obtenerValorPorDefecto(tipo);
+        const valores = Array(tamano).fill(valorPorDefecto);
+        this.valores[nombre] = valores;
+        this.tipos[nombre] = `array of ${tipo}`;
+    }
+    
+    /**
+     * Obtiene un array desde el entorno, buscando en el entorno actual y sus padres.
+     * @param {string} nombre
+     * @returns {Array} Array encontrado
+     * @throws {Error} Si el array no está definido
+     */
+    getArray(nombre) {
+        if (this.valores.hasOwnProperty(nombre) && Array.isArray(this.valores[nombre])) {
+            return this.valores[nombre];
+        } else if (this.padre) {
+            return this.padre.getArray(nombre);
+        } else {
+            throw new Error(`Array '${nombre}' no definido.`);
+        }
+    }
+
+    setArrayComoCopia(nombre, idExistente) {
+        if (!this.existeVariable(idExistente)) {
+            throw new Error(`El array '${idExistente}' no está definido.`);
+        }
+        const arrayOriginal = this.getVariable(idExistente);
+        const tipoOriginal = this.getTipoVariable(idExistente);
+        
+        if (!Array.isArray(arrayOriginal)) {
+            throw new Error(`'${idExistente}' no es un array y no se puede copiar.`);
+        }
+        
+        // Realizar una copia profunda del array
+        this.valores[nombre] = JSON.parse(JSON.stringify(arrayOriginal));
+        this.tipos[nombre] = tipoOriginal;  // Mantener el tipo original del array
+    }
+    
+
 }

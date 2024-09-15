@@ -31,6 +31,9 @@
  * @typedef {import('./docs/Interprete/nodos.js').DeclaracionVariable} DeclaracionVariable
 
 
+ * @typedef {import('./docs/Interprete/nodos.js').DeclaracionArray} DeclaracionArray
+
+
  * @typedef {import('./docs/Interprete/nodos.js').ReferenciaVariable} ReferenciaVariable
 
 
@@ -190,6 +193,15 @@ export class BaseVisitor {
      */
     visitDeclaracionVariable(node) {
         throw new Error('Metodo visitDeclaracionVariable no implementado');
+    }
+    
+
+    /**
+     * @param {DeclaracionArray} node
+     * @returns {any}
+     */
+    visitDeclaracionArray(node) {
+        throw new Error('Metodo visitDeclaracionArray no implementado');
     }
     
 
