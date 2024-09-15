@@ -10,6 +10,8 @@
       'referenciaVariable': nodos.ReferenciaVariable,
       'print': nodos.Print,
       'expresionStmt': nodos.ExpresionStmt,
+      'arrayAccess': nodos.ArrayAccess,
+      'arrayAssign': nodos.ArrayAssign,
       'asignacion': nodos.Asignacion,
       'bloque': nodos.Bloque,
       'if': nodos.If,
@@ -182,15 +184,28 @@ Reserved
 Identificador 
   = [a-zA-Z_][a-zA-Z0-9_]* !Reserved { return text(); } 
 
+ArrayAssign
+  = id:Identificador _ "[" _ indice:Expresion _ "]" _ "=" _ valor:Expresion { 
+      return crearNodo('arrayAssign', { id, indice, valor }); 
+    }
+
+// ===== Acceso a Elementos de Arrays =====
+ArrayAccess
+  = id:Identificador _ "[" _ indice:Expresion _ "]" { 
+      return crearNodo('arrayAccess', { id, indice }); 
+    }
+
 // ===== Expresiones =====
 Expresion
   = Asignacion
+  / ArrayAssign
+  / ArrayAccess
   / FuncionesEmbebidas
+  / Operacion
 
 // ===== Asignacion =====
 Asignacion 
   = id:Identificador _ op:OperadorAsignacion _ asgn:Asignacion { return crearNodo('asignacion', { id, op, asgn }); }
-  / Operacion
 
 // ===== Operador de Asignacion =====
 OperadorAsignacion 

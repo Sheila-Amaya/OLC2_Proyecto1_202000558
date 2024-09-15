@@ -194,7 +194,6 @@ export class InterpreterVisitor extends BaseVisitor {
         return node.valor;
     }
 
-
     /**
      *  
      * @type {BaseVisitor['visitChar']}
@@ -266,7 +265,7 @@ export class InterpreterVisitor extends BaseVisitor {
             this.entornoActual.setArray(nombreArray, node.arrayInit.map(v => v.valor), tipoArray); // Inicializacion con valores por defecto
             console.log(`Declarando array ${nombreArray} de tipo ${tipoArray} con valores iniciales: ${JSON.stringify(node.arrayInit.map(v => v.valor))}.`);
         } else if (node.tam !== null && node.tam.valor !== undefined) {
-            // Inicialización con tamaño
+            // Inicializacion con tamaño
             const tamano = node.tam.valor;  // Acceder al valor numerico [5]
             const defaultValue = this.entornoActual.getDefaultValue(tipoArray);
             const arrayInicializado = Array(tamano).fill(defaultValue);
@@ -284,7 +283,6 @@ export class InterpreterVisitor extends BaseVisitor {
         const nombreVariable = node.id;
         return this.entornoActual.getVariable(nombreVariable);
     }
-
 
     /**
       * @type {BaseVisitor['visitPrint']}
@@ -309,6 +307,66 @@ export class InterpreterVisitor extends BaseVisitor {
     }
 
     /**
+     * @type {BaseVisitor['visitArrayAccess']}
+     */
+    visitArrayAccess(node) {
+        const array = this.entornoActual.getVariable(node.id);
+        const index = node.indice.accept(this);
+    
+        // val. que el array sea un array
+        if (!Array.isArray(array)) {
+            throw new Error(`'${node.id}' no es un array.`);
+        }
+    
+        // val. que el indice sea un numero
+        if (typeof index !== 'number' || index < 0 || index >= array.length) {
+            throw new Error(`indice '${index}' fuera de rango para el array '${node.id}'.`);
+        }
+    
+        const valor = array[index];
+        console.log(`Acceso a array '${node.id}' en la posicion [${index}], valor obtenido: ${valor}.`);
+        return valor; // Retorna el valor del indice
+    }
+
+    /**
+     * @type {BaseVisitor['visitArrayAssign']}
+     */
+    visitArrayAssign(node) {
+        const array = this.entornoActual.getVariable(node.id);
+        
+        if (!Array.isArray(array)) {
+            throw new Error(`'${node.id}' no es un array.`);
+        }
+        
+        // evalua el indice
+        const index = node.indice.accept(this);
+        
+        // verf. que el indice sea un numero
+        if (typeof index !== 'number' || !Number.isInteger(index)) {
+            throw new Error(`el indice debe ser un entero, pero se encontro '${typeof index}'.`);
+        }
+        
+        // Verf. que el indice este en rango
+        if (index < 0 || index >= array.length) {
+            throw new Error(`indice fuera de rango. El índice debe estar entre 0 y ${array.length - 1}.`);
+        }
+        
+        const valor = node.valor.accept(this);
+        
+        // verf. que el tipo del valor sea el mismo que el tipo del array
+        const tipoArray = this.entornoActual.getTipoVariable(node.id).split(' ')[2]; // Obtiene el tipo del array
+        const tipoValor = obtenerTipo(valor);
+        
+        if (tipoArray !== tipoValor) {
+            throw new Error(`tipo de dato no soportado. Se esperaba '${tipoArray}' pero se encontró '${tipoValor}'.`);
+        }
+        
+        // asigna el valor al array
+        array[index] = valor;
+        console.log(`Asignacion a array '${node.id}' en la posicion [${index}], nuevo valor: ${valor}.`);
+    }
+
+    /**
      * @type {BaseVisitor['visitAsignacion']}
      */
     visitAsignacion(node) {
@@ -316,21 +374,21 @@ export class InterpreterVisitor extends BaseVisitor {
         const valorAsignado = node.asgn.accept(this);
         const tipoValorAsignado = obtenerTipo(valorAsignado);
     
-        // Obtener tipo de la variable antes de asignar
+        // obtiene el tipo de la variable
         const tipoVariable = this.entornoActual.getTipoVariable(nombreVariable);
     
         Asignacion.setEntorno(this.entornoActual);
     
-        // Verificar si la variable es de tipo null y aceptar cualquier tipo
+        // Verif. si la variable es null y asifna el valor
         if (tipoVariable === 'null') {
             this.entornoActual.assignVariable(nombreVariable, valorAsignado);
-            this.entornoActual.tipos[nombreVariable] = tipoValorAsignado; // Actualiza el tipo a partir del valor asignado
+            this.entornoActual.tipos[nombreVariable] = tipoValorAsignado; 
             console.log(`Variable '${nombreVariable}' asignada con valor ${valorAsignado} y tipo ${tipoValorAsignado}`);
             return;
         }
     
         if (tipoVariable !== tipoValorAsignado) {
-            throw new Error(`Tipos incompatibles. No se puede asignar un valor de tipo '${tipoValorAsignado}' a una variable de tipo '${tipoVariable}'`);
+            throw new Error(`tipos incompatibles. No se puede asignar un valor de tipo '${tipoValorAsignado}' a una variable de tipo '${tipoVariable}'`);
         }
     
         switch (node.op) {

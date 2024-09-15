@@ -478,6 +478,80 @@ export class ExpresionStmt extends Expresion {
     }
 }
     
+export class ArrayAssign extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {string} options.id Identificador del array
+ * @param {Expresion} options.indice Índice del array
+ * @param {Expresion} options.valor Valor a asignar
+    */
+    constructor({ id, indice, valor }) {
+        super();
+        
+        /**
+         * Identificador del array
+         * @type {string}
+        */
+        this.id = id;
+
+
+        /**
+         * Índice del array
+         * @type {Expresion}
+        */
+        this.indice = indice;
+
+
+        /**
+         * Valor a asignar
+         * @type {Expresion}
+        */
+        this.valor = valor;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitArrayAssign(this);
+    }
+}
+    
+export class ArrayAccess extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {string} options.id Identificador del array
+ * @param {Expresion} options.indice Índice del array
+    */
+    constructor({ id, indice }) {
+        super();
+        
+        /**
+         * Identificador del array
+         * @type {string}
+        */
+        this.id = id;
+
+
+        /**
+         * Índice del array
+         * @type {Expresion}
+        */
+        this.indice = indice;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitArrayAccess(this);
+    }
+}
+    
 export class Asignacion extends Expresion {
 
     /**
@@ -1036,4 +1110,4 @@ export class Llamada extends Expresion {
     }
 }
     
-export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, DeclaracionArray, ReferenciaVariable, Print, ExpresionStmt, Asignacion, Ternario, ParseInt, ParseFloat, ToString, ToLowerCase, ToUpperCase, TypeOf, Bloque, If, ElseIf, Switch, While, For, Break, Continue, Return, Llamada }
+export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, DeclaracionArray, ReferenciaVariable, Print, ExpresionStmt, ArrayAssign, ArrayAccess, Asignacion, Ternario, ParseInt, ParseFloat, ToString, ToLowerCase, ToUpperCase, TypeOf, Bloque, If, ElseIf, Switch, While, For, Break, Continue, Return, Llamada }

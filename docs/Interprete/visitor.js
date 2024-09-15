@@ -43,6 +43,12 @@
  * @typedef {import('./docs/Interprete/nodos.js').ExpresionStmt} ExpresionStmt
 
 
+ * @typedef {import('./docs/Interprete/nodos.js').ArrayAssign} ArrayAssign
+
+
+ * @typedef {import('./docs/Interprete/nodos.js').ArrayAccess} ArrayAccess
+
+
  * @typedef {import('./docs/Interprete/nodos.js').Asignacion} Asignacion
 
 
@@ -229,6 +235,24 @@ export class BaseVisitor {
      */
     visitExpresionStmt(node) {
         throw new Error('Metodo visitExpresionStmt no implementado');
+    }
+    
+
+    /**
+     * @param {ArrayAssign} node
+     * @returns {any}
+     */
+    visitArrayAssign(node) {
+        throw new Error('Metodo visitArrayAssign no implementado');
+    }
+    
+
+    /**
+     * @param {ArrayAccess} node
+     * @returns {any}
+     */
+    visitArrayAccess(node) {
+        throw new Error('Metodo visitArrayAccess no implementado');
     }
     
 
