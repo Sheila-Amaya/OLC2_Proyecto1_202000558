@@ -1014,6 +1014,55 @@ export class For extends Expresion {
     }
 }
     
+export class ForEach extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {string} options.tipo Tipo de la variable de iteración
+ * @param {string} options.id Identificador de la variable de iteración
+ * @param {string} options.arr Identificador del array a iterar
+ * @param {Expresion} options.stmt Cuerpo del foreach
+    */
+    constructor({ tipo, id, arr, stmt }) {
+        super();
+        
+        /**
+         * Tipo de la variable de iteración
+         * @type {string}
+        */
+        this.tipo = tipo;
+
+
+        /**
+         * Identificador de la variable de iteración
+         * @type {string}
+        */
+        this.id = id;
+
+
+        /**
+         * Identificador del array a iterar
+         * @type {string}
+        */
+        this.arr = arr;
+
+
+        /**
+         * Cuerpo del foreach
+         * @type {Expresion}
+        */
+        this.stmt = stmt;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitForEach(this);
+    }
+}
+    
 export class Break extends Expresion {
 
     /**
@@ -1110,4 +1159,4 @@ export class Llamada extends Expresion {
     }
 }
     
-export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, DeclaracionArray, ReferenciaVariable, Print, ExpresionStmt, ArrayAssign, ArrayAccess, Asignacion, Ternario, ParseInt, ParseFloat, ToString, ToLowerCase, ToUpperCase, TypeOf, Bloque, If, ElseIf, Switch, While, For, Break, Continue, Return, Llamada }
+export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, DeclaracionArray, ReferenciaVariable, Print, ExpresionStmt, ArrayAssign, ArrayAccess, Asignacion, Ternario, ParseInt, ParseFloat, ToString, ToLowerCase, ToUpperCase, TypeOf, Bloque, If, ElseIf, Switch, While, For, ForEach, Break, Continue, Return, Llamada }

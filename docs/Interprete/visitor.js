@@ -91,6 +91,9 @@
  * @typedef {import('./docs/Interprete/nodos.js').For} For
 
 
+ * @typedef {import('./docs/Interprete/nodos.js').ForEach} ForEach
+
+
  * @typedef {import('./docs/Interprete/nodos.js').Break} Break
 
 
@@ -379,6 +382,15 @@ export class BaseVisitor {
      */
     visitFor(node) {
         throw new Error('Metodo visitFor no implementado');
+    }
+    
+
+    /**
+     * @param {ForEach} node
+     * @returns {any}
+     */
+    visitForEach(node) {
+        throw new Error('Metodo visitForEach no implementado');
     }
     
 

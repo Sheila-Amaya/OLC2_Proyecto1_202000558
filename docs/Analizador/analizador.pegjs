@@ -19,6 +19,7 @@
       'switch': nodos.Switch,
       'while': nodos.While,
       'for': nodos.For,
+      'foreach': nodos.ForEach,
       'break': nodos.Break,
       'continue': nodos.Continue,
       'return': nodos.Return,
@@ -85,6 +86,7 @@ Stmt
   / Switch
   / whileStmt
   / forStmt
+  / forEachStmt
   / breakStmt
   / continueStmt
   / returnStmt
@@ -126,7 +128,7 @@ Case = "case" _ exp:Expresion _ ":" _ stmt:Declaracion* {
 Default = "default" _ ":" _ stmt:Declaracion* { 
   return { stmt } }
 
-// ===== Sentencia While ====
+// ===== Sentencia While ==== 
 whileStmt
 = "while" _ "(" _ cond:Expresion _ ")" _ stmt:Stmt { 
       return crearNodo('while', { cond, stmt }); 
@@ -143,6 +145,12 @@ ForInit
   = dcl:VarDcl { return dcl }
   / exp:Expresion _ ";" { return exp }
   / ";" { return null }
+
+// ===== Sentencia For Each =====
+forEachStmt
+  = "for" _ "(" _ tipo:Type _ id:Identificador _ ":" _ arr:Identificador _ ")" _ stmt:Stmt {
+      return crearNodo('foreach', { tipo, id, arr, stmt });
+    }
 
 // ===== Sentencia Break =====
 breakStmt
@@ -173,17 +181,26 @@ ListaExpresiones
   = primeraExp:Expresion _ siguientesExps:("," _ siguienteExp:Expresion { return siguienteExp; })* { 
       return [primeraExp, ...siguientesExps]; 
     }
-  
 
-// ===== Palabras reservadas =====
-Reserved 
-  = "true" / "false" / "int" / "float" / "string" / "boolean" / "char" / "var" / "if" / "else" / "while" / "for" 
-  / "break" / "continue" / "return" / "null"
+// ===== Expresiones =====
+Expresion
+  = ArrayAssign
+  / ArrayAccess
+  / Asignacion
+  / Operacion
+  / FuncionesEmbebidas
+  / Primaria
 
-// ===== Identificadores =====
-Identificador 
-  = [a-zA-Z_][a-zA-Z0-9_]* !Reserved { return text(); } 
+// ===== Asignacion =====
+Asignacion 
+  = id:Identificador _ op:OperadorAsignacion _ asgn:Asignacion { return crearNodo('asignacion', { id, op, asgn }); }
+  / Operacion
 
+// ===== Operador de Asignacion =====
+OperadorAsignacion 
+  = "=" / "+=" / "-=" { return text(); }
+
+// ===== Asignación de Array =====
 ArrayAssign
   = id:Identificador _ "[" _ indice:Expresion _ "]" _ "=" _ valor:Expresion { 
       return crearNodo('arrayAssign', { id, indice, valor }); 
@@ -194,22 +211,6 @@ ArrayAccess
   = id:Identificador _ "[" _ indice:Expresion _ "]" { 
       return crearNodo('arrayAccess', { id, indice }); 
     }
-
-// ===== Expresiones =====
-Expresion
-  = Asignacion
-  / ArrayAssign
-  / ArrayAccess
-  / FuncionesEmbebidas
-  / Operacion
-
-// ===== Asignacion =====
-Asignacion 
-  = id:Identificador _ op:OperadorAsignacion _ asgn:Asignacion { return crearNodo('asignacion', { id, op, asgn }); }
-
-// ===== Operador de Asignacion =====
-OperadorAsignacion 
-  = "=" / "+=" / "-=" { return text(); }
 
 // ===== Operaciones =====
 Operacion
@@ -322,7 +323,7 @@ parseInt
     }
 
 parseFloat
-  = "parsefloat" _ "(" _ exp:Expresion _ ")" {
+  = "parseFloat" _ "(" _ exp:Expresion _ ")" {
       return crearNodo('parseFloat', { exp });
     }
 
@@ -411,6 +412,15 @@ Char
 // ===== Tipos de datos permitidos =====
 Type 
   = "int" / "float" / "string" / "boolean" / "char" / "var" {  return text(); }
+
+// ===== Palabras reservadas =====
+Reserved 
+  = "true" / "false" / "int" / "float" / "string" / "boolean" / "char" / "var" / "if" / "else" / "while" / "for" 
+  / "break" / "continue" / "return" / "null"
+
+// ===== Identificadores =====
+Identificador 
+  = [a-zA-Z_][a-zA-Z0-9_]* !Reserved { return text(); } 
 
 // ===== Espacios en blanco y comentarios =====
 _ 

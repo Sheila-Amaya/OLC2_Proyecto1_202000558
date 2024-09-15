@@ -168,11 +168,11 @@ export class Entorno {
      */
     setArray(nombre, valores, tipo) {
         if (this.existeVariableLocal(nombre)) {
-            throw new Error(`Array '${nombre}' ya definido en este entorno.`);
+            throw new Error(`array '${nombre}' ya definido en este entorno.`);
         }
         // Verifica que todos los elementos en 'valores' coincidan con el tipo del array
         if (!valores.every(valor => obtenerTipo(valor) === tipo)) {
-            throw new Error(`Los valores del array '${nombre}' no coinciden con el tipo '${tipo}'.`);
+            throw new Error(`los valores del array '${nombre}' no coinciden con el tipo '${tipo}'.`);
         }
         this.valores[nombre] = valores;
         this.tipos[nombre] = `array of ${tipo}`;
@@ -186,10 +186,10 @@ export class Entorno {
      */
     setArrayConTamano(nombre, tamano, tipo) {
         if (this.existeVariableLocal(nombre)) {
-            throw new Error(`Array '${nombre}' ya definido en este entorno.`);
+            throw new Error(`array '${nombre}' ya definido en este entorno.`);
         }
         if (tamano < 0) {
-            throw new Error(`El tamaño del array '${nombre}' no puede ser negativo.`);
+            throw new Error(`el tamaño del array '${nombre}' no puede ser negativo.`);
         }
         const valorPorDefecto = this.obtenerValorPorDefecto(tipo);
         const valores = Array(tamano).fill(valorPorDefecto);
@@ -209,13 +209,13 @@ export class Entorno {
         } else if (this.padre) {
             return this.padre.getArray(nombre);
         } else {
-            throw new Error(`Array '${nombre}' no definido.`);
+            throw new Error(`array '${nombre}' no definido.`);
         }
     }
 
     setArrayComoCopia(nombre, idExistente) {
         if (!this.existeVariable(idExistente)) {
-            throw new Error(`El array '${idExistente}' no está definido.`);
+            throw new Error(`el array '${idExistente}' no está definido.`);
         }
         const arrayOriginal = this.getVariable(idExistente);
         const tipoOriginal = this.getTipoVariable(idExistente);

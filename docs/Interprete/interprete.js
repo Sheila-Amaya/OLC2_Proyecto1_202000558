@@ -682,7 +682,44 @@ export class InterpreterVisitor extends BaseVisitor {
             this.prevContinue = incrementoAnterior;
         }
     }
+
+    /**
+     * @type {BaseVisitor['visitForEach']}
+     * 
+     */
+    visitForEach(node) {
+        // obtiene el array en el entorno actual con name para iterar
+        const array = this.entornoActual.getVariable(node.arr);
     
+        // verf. si es un array
+        if (!Array.isArray(array)) {
+            throw new Error(`'${node.arr}' no es un array.`);
+        }
+    
+        const entornoAnterior = this.entornoActual;
+    
+        // itera sobre cada elemento del array
+        for (const elemento of array) {
+            this.entornoActual = new Entorno(entornoAnterior);
+    
+            try {
+                // variable que se asigna en cada iteracion
+                this.entornoActual.setVariable(node.id, elemento, node.tipo);
+    
+                // ejecuta las instrucciones del bucle
+                node.stmt.accept(this);
+            } catch (error) {
+                if (error instanceof BreakException) { // break
+                    break;
+                } else if (error instanceof ContinueException) { // continue
+                    continue;
+                } else {
+                    throw error;
+                }
+            }
+        }
+        this.entornoActual = entornoAnterior;
+    }
 
     /**
      * @type {BaseVisitor['visitBreak']}
