@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Tabla de Símbolos</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light text-dark">
+
+    <div class="container mt-4">
+        <h1>Reporte de Tabla de Símbolos</h1>
+        <div id="reportContainer"></div>
+    </div>
+
+    <script>
+        // Cargar la tabla de simbolos desde localStorage
+        const symbols = JSON.parse(localStorage.getItem('symbolTable') || '[]');
+
+        function generateReport(symbols) {
+            let report = `
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tipo símbolo</th>
+                        <th>Tipo dato</th>
+                        <th>Ámbito</th>
+                        <th>Línea</th>
+                        <th>Columna</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
+            symbols.forEach(symbol => {
+                report += `
+                <tr>
+                    <td>${symbol.id}</td>
+                    <td>${symbol.tipoSimbolo}</td>
+                    <td>${symbol.tipoDato}</td>
+                    <td>${symbol.ambito}</td>
+                    <td>${symbol.linea}</td>
+                    <td>${symbol.columna}</td>
+                </tr>
+                `;
+            });
+
+            report += `
+                </tbody>
+            </table>`;
+            document.getElementById('reportContainer').innerHTML = report;
+        }
+
+        // genera el reporte al cargar la pag.
+        generateReport(symbols);
+    </script>
+
+</body>
+</html>

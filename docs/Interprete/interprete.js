@@ -18,6 +18,11 @@ export class InterpreterVisitor extends BaseVisitor {
         super();
         this.entornoActual = new Entorno();
 
+        //*************************************************************
+        this.symbolTable = []; // Inicializa la tabla de símbolos
+        this.currentScope = 'Global'; // ambito inicial
+        //************************************************************* 
+
         this.entornoActual.setVariable('true', true, 'boolean');
         this.entornoActual.setVariable('false', false, 'boolean');
 
@@ -32,6 +37,20 @@ export class InterpreterVisitor extends BaseVisitor {
          * @type {Expresion | null}
         */
         this.prevContinue = null;
+        
+    }
+
+    //*************************************************************
+    addSymbol(id, tipoSimbolo, tipoDato, ambito, linea, columna) {
+        const symbol = { id, tipoSimbolo, tipoDato, ambito, linea, columna };
+        this.symbolTable.push(symbol);
+        // Guarda en Local Storage para que se pueda visualizar en la pagina del reporte
+        localStorage.setItem('symbolTable', JSON.stringify(this.symbolTable));
+    }
+    //*************************************************************
+
+    getSymbolTable() {
+        return this.symbolTable;
     }
 
     interpretar(nodo) {
@@ -227,7 +246,7 @@ export class InterpreterVisitor extends BaseVisitor {
                 location: node.location
             };
         }
-    
+
         const tipoInferido = valorInicial === null ? 'null' : obtenerTipo(valorInicial);
     
         if (tipoDefinido !== 'var' && tipoDefinido !== tipoInferido && tipoInferido !== 'null') {
@@ -243,6 +262,9 @@ export class InterpreterVisitor extends BaseVisitor {
     
         this.entornoActual.setVariable(nombreVariable, valorInicial, node.tipo || tipoDefinido);
         console.log(`Variable '${nombreVariable}' declarada con valor ${valorInicial} y tipo ${node.tipo || tipoDefinido}`);
+        //*************************************************************
+        this.addSymbol(nombreVariable, 'Variable', tipoDefinido, this.currentScope, node.location.start.line, node.location.start.column);        
+        location: node.location
     }
 
     /** 
@@ -275,6 +297,9 @@ export class InterpreterVisitor extends BaseVisitor {
         } else {
             throw new Error(`Error en la declaración del array '${nombreArray}': se debe definir con inicializacion, tamaño o copia.`);
         }
+        //*************************************************************
+        this.addSymbol(nombreArray, 'Array', tipoArray, this.currentScope, node.location.start.line, node.location.start.column);
+        location: node.location
     }
 
     /**
@@ -290,6 +315,9 @@ export class InterpreterVisitor extends BaseVisitor {
         
         // def. la funcion en el entorno actual
         this.entornoActual.setVariable(node.id, funcionDef, tipoFuncion);
+        //*************************************************************
+        this.addSymbol(node.id, 'Funcion', tipoFuncion, this.currentScope, node.location.start.line, node.location.start.column);
+        location: node.location
     }
 
     /**
@@ -298,7 +326,7 @@ export class InterpreterVisitor extends BaseVisitor {
     visitReferenciaVariable(node) {
         const nombreVariable = node.id;
         return this.entornoActual.getVariable(nombreVariable);
-    }
+    }  
 
     /**
       * @type {BaseVisitor['visitPrint']}
