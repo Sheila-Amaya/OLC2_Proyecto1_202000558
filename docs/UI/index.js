@@ -146,7 +146,7 @@ function executeCode() {
             logToConsole(`Error: ${error.message} at line ${error.location?.start.line} column ${error.location?.start.column}`);
         }
     } else {
-        alert("No hay ningún archivo abierto para ejecutar.");
+        alert("No hay ningun archivo abierto para ejecutar.");
     }
 }
 
@@ -156,7 +156,7 @@ function clearConsole() {
 }
 
 function generateErrorReport() {
-    // Lógica para generar el reporte de errores
+    window.open('https://sheila-amaya.github.io/OLC2_Proyecto1_202000558/TablaErrores/reporteErrores.html', '_blank');
 }
 
 function generateSymbolTableReport() {

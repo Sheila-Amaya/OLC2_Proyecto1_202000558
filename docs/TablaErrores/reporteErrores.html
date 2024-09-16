@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Errores</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light text-dark">
+
+    <div class="container mt-4">
+        <h1>Reporte de Errores</h1>
+        <div id="reportContainer"></div>
+    </div>
+
+    <script>
+        // Cargar los errores desde localStorage
+        const errors = JSON.parse(localStorage.getItem('errorTable') || '[]');
+
+        function generateErrorReport(errors) {
+            let report = `
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>No.</th>
+                        <th>Descripción</th>
+                        <th>Línea</th>
+                        <th>Columna</th>
+                        <th>Tipo</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
+            errors.forEach(error => {
+                report += `
+                <tr>
+                    <td>${error.numero}</td>
+                    <td>${error.descripcion}</td>
+                    <td>${error.linea}</td>
+                    <td>${error.columna}</td>
+                    <td>${error.tipo}</td>
+                </tr>
+                `;
+            });
+
+            report += `
+                </tbody>
+            </table>`;
+            document.getElementById('reportContainer').innerHTML = report;
+        }
+
+        generateErrorReport(errors);
+    </script>
+
+</body>
+</html>
