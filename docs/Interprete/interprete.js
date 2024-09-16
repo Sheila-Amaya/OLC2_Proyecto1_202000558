@@ -391,7 +391,7 @@ export class InterpreterVisitor extends BaseVisitor {
             return valor === null ? 'null' : valor;
         });
         
-        this.salida += '\n' + resultados.join(' ') + '\n'; // Concatena los resultados y añade un salto de línea
+        this.salida += resultados.join(' ') + '\n'; // Concatena los resultados y añade un salto de línea
     }
 
     /**
