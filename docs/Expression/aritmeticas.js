@@ -21,11 +21,11 @@ export class Aritmeticas {
         // int + float = float o float + int = float
         if ((typeof izq === 'number' && Number.isInteger(izq) && typeof der === 'number' && !Number.isInteger(der)) ||
             (typeof izq === 'number' && !Number.isInteger(izq) && typeof der === 'number' && Number.isInteger(der))) {
-            return { valor: izq + der, tipo: 'float' };
+            return { valor: (izq + der).toFixed(1), tipo: 'float' };
         }
         // float + float = float
         if (typeof izq === 'number' && !Number.isInteger(izq) && typeof der === 'number' && !Number.isInteger(der)) {
-            return { valor: izq + der, tipo: 'float' };
+            return { valor: (izq + der).toFixed(1), tipo: 'float' };
         }
         // string + string = string
         if (typeof izq === 'string' && typeof der === 'string') {
@@ -46,13 +46,13 @@ export class Aritmeticas {
         if ((typeof izq === 'number' && Number.isInteger(izq) && typeof der === 'number' && !Number.isInteger(der)) ||
             (typeof izq === 'number' && !Number.isInteger(izq) && typeof der === 'number' && Number.isInteger(der))) {
             // int - float = float o float - int = float
-            return { valor: parseFloat(izq - der), tipo: 'float' };
+            return { valor: (izq - der).toFixed(1), tipo: 'float' };
         }
 
         // float - float = float
         if (typeof izq === 'number' && !Number.isInteger(izq) && typeof der === 'number' && !Number.isInteger(der)) {
             // float - float = float
-            return { valor: izq - der, tipo: 'float' };
+            return { valor: (izq - der).toFixed(1), tipo: 'float' };
         }
 
         throw new Error(`Tipos incompatibles para la operación de resta: ${typeof izq} - ${typeof der}`);

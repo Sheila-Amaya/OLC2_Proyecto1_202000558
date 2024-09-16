@@ -125,7 +125,7 @@ export class Entorno {
             case 'int':
                 return 0;
             case 'float':
-                return 0.0;
+                return (0.0).toFixed(1);
             case 'string':
                 return "";
             case 'boolean':
@@ -148,7 +148,7 @@ export class Entorno {
             case 'int':    
                 return 0;
             case 'float': 
-                return 0.01;
+                return (0.0).toFixed(1);
             case 'string': 
                 return '';
             case 'boolean':     
