@@ -10,6 +10,7 @@ import { Asignacion } from "../Expression/asignacion.js";
 import { Comparaciones } from "../Expression/comparacion.js";
 import { Relacionales } from "../Expression/relacionales.js";
 import { Logicos } from "../Expression/logicos.js";
+import { FuncionDef } from "../Interprete/funcionDef.js";
 
 export class InterpreterVisitor extends BaseVisitor {
 
@@ -274,6 +275,21 @@ export class InterpreterVisitor extends BaseVisitor {
         } else {
             throw new Error(`Error en la declaración del array '${nombreArray}': se debe definir con inicializacion, tamaño o copia.`);
         }
+    }
+
+    /**
+     * @type {BaseVisitor['visitFuncion']}
+     */
+    visitFuncion(node) {
+        // node.params es un array de parametros con la forma { id: string, tipo: string } puede venir vacio
+        const params = Array.isArray(node.params) ? node.params : [];
+        const funcionDef = new FuncionDef(node, this.entornoActual);
+        
+        // def. el tipo de la funcion
+        const tipoFuncion = `function (${params.map(param => param.tipo).join(', ')}) -> ${node.tipoRetorno}`;
+        
+        // def. la funcion en el entorno actual
+        this.entornoActual.setVariable(node.id, funcionDef, tipoFuncion);
     }
 
     /**
@@ -815,18 +831,17 @@ export class InterpreterVisitor extends BaseVisitor {
     */
     visitLlamada(node) {
         const funcion = node.callee.accept(this);
-
-        const argumentos = node.args.map(arg => arg.accept(this));
-
+    
         if (!(funcion instanceof Invocable)) {
-            throw new Error('No es invocable');
-            // 1() "sdalsk"()
+            throw new Error(`'${node.callee}' no es invocable`);
         }
-
+    
+        const argumentos = node.args.map(arg => arg.accept(this));
+    
         if (funcion.aridad() !== argumentos.length) {
-            throw new Error('Aridad incorrecta');
+            throw new Error(`Aridad incorrecta. Se esperaban ${funcion.aridad()} argumentos, pero se recibieron ${argumentos.length}`);
         }
-
+    
         return funcion.invocar(this, argumentos);
     }
 

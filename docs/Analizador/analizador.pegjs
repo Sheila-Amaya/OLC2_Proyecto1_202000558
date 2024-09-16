@@ -7,6 +7,7 @@
       'unaria': nodos.OperacionUnaria,
       'declaracionVariable': nodos.DeclaracionVariable,
       'declaracionArray': nodos.DeclaracionArray,
+      'funcion': nodos.Funcion,
       'referenciaVariable': nodos.ReferenciaVariable,
       'print': nodos.Print,
       'expresionStmt': nodos.ExpresionStmt,
@@ -51,9 +52,33 @@ programa = _ dcl:Declaracion* _ { return dcl }
 
 // ===== Declaraciones =====
 Declaracion 
-  = dcl:VarDcl _ { return dcl }
-  / arrayDcl:ArrayDcl _ { return arrayDcl }
-  / stmt:Stmt _  { return stmt }
+  = dcl:VarDcl _          { return dcl }
+  / arrayDcl:ArrayDcl _   { return arrayDcl }
+  / funcDcl:FuncionDcl _  { return funcDcl }
+  / stmt:Stmt _           { return stmt }
+
+//**************************************************************************************************************************
+// ===== Declaracion de Funciones =====
+FuncionDcl
+  = tipoRetorno:TipoRetorno _ id:Identificador _ "(" params:Parametros? ")" _ cuerpo:bloqueStmt { 
+      return crearNodo('funcion', { tipoRetorno, id, params: params || [], cuerpo }); 
+    }
+
+// ===== Tipo de Retorno =====
+TipoRetorno
+  = "void" { return "void"; }
+  / Type2 { return text(); }
+
+// ===== Parametros de la Funcion =====
+Parametros
+  = primeraParam:Parametro _ siguientesParams:("," _ siguienteParam:Parametro { return siguienteParam; })* {
+      return [primeraParam, ...siguientesParams];
+    }
+
+Parametro
+  = tipo:Type2 _ id:Identificador { return { tipo, id }; }
+
+//**************************************************************************************************************************
 
 // ===== Declaracion de variables =====
 VarDcl 
@@ -69,7 +94,6 @@ ArrayDcl
       return crearNodo('declaracionArray', { tipo: `${elemTipo}`, id, tam }); 
     }
   / arrayTipo:ArrayType _ id:Identificador _ "=" _ copia:Identificador _ ";" { 
-      // Nueva regla para la copia de arrays
       return crearNodo('declaracionArray', { tipo: arrayTipo, id, copyFrom: copia }); 
     }
 
@@ -187,38 +211,19 @@ ListaExpresiones
 
 // ===== Expresiones =====
 Expresion
-  = ArrayAssign
-  / ArrayAccess
-  / Asignacion
+  = Asignacion
   / Operacion
-  / FuncionesEmbebidas
-  / Primaria
 
 // ===== Asignacion =====
 Asignacion 
-  = id:Identificador _ op:OperadorAsignacion _ asgn:Asignacion { return crearNodo('asignacion', { id, op, asgn }); }
+  = ArrayAssign
+  / id:Identificador _ op:OperadorAsignacion _ asgn:Asignacion { return crearNodo('asignacion', { id, op, asgn }); }
   / Operacion
-
-// ===== Operador de Asignacion =====
-OperadorAsignacion 
-  = "=" / "+=" / "-=" { return text(); }
-
-// ===== Acceso a Atributo Length =====
-AtributoLength
-  = id:Identificador _ "." _ "length" {
-      return crearNodo('length', { array: id });
-    }
 
 // ===== Asignación de Array =====
 ArrayAssign
   = id:Identificador _ "[" _ indice:Expresion _ "]" _ "=" _ valor:Expresion { 
       return crearNodo('arrayAssign', { id, indice, valor }); 
-    }
-
-// ===== Acceso a Elementos de Arrays =====
-ArrayAccess
-  = id:Identificador _ "[" _ indice:Expresion _ "]" { 
-      return crearNodo('arrayAccess', { id, indice }); 
     }
 
 // ===== Operaciones =====
@@ -244,16 +249,9 @@ Or
 
 // ===== Operador And =====
 And
-  = left:Not tail:( _ "&&" _ right:Not { return { op: "&&", right }; })* {
+  = left:Comparacion tail:( _ "&&" _ right:Comparacion { return { op: "&&", right }; })* {
       return tail.reduce((left, { op, right }) => crearNodo('binaria', { op, izq: left, der: right }), left);
     }
-
-// ===== Operador Not =====
-Not
-  = "!" _ exp:Not { 
-      return crearNodo('unaria', { op: '!', exp: exp }); 
-    }
-  / Comparacion
 
 // ===== Operaciones de Comparacion =====
 Comparacion 
@@ -293,29 +291,50 @@ Multiplicacion
 
 // ===== Negacion Unaria =====
 Unaria 
-  = "-" _ exp:Unaria { return crearNodo('unaria', { op: '-', exp: exp }); }
+  = "!" _ exp:Unaria { return crearNodo('unaria', { op: '!', exp: exp }); }
+  / "-" _ exp:Unaria { return crearNodo('unaria', { op: '-', exp: exp }); }
   / Primaria
 
 // ===== Expresiones Primarias =====
 Primaria
   = Agrupacion
   / AtributoLength
+  / ArrayAccess
   / FuncionesEmbebidas
-  / Literal
   / Llamada
+  / Literal
   / ReferenciaVariable
+
+// ===== Acceso a Elementos de Arrays =====
+ArrayAccess
+  = id:Identificador _ "[" _ indice:Expresion _ "]" { 
+      return crearNodo('arrayAccess', { id, indice }); 
+    }
 
 // ===== Agrupacion de Expresiones =====
 Agrupacion
   = "(" _ exp:Expresion _ ")" { return crearNodo('agrupacion', { exp }); }
 
-// ===== Literales =====
-Literal
-  = Booleano
-  / Numero
-  / String
-  / Char
-  / "null" { return crearNodo('null', { tipo: 'null', valor: null }); }
+// ===== Acceso a Atributo Length =====
+AtributoLength
+  = id:Identificador _ "." _ "length" {
+      return crearNodo('length', { array: id });
+    }
+
+// ===== Operador de Asignacion =====
+OperadorAsignacion 
+  = "=" / "+=" / "-=" { return text(); }
+
+// ===== Llamadas a funciones =====
+Llamada 
+  = callee:Numero _ params:("(" args:Argumentos? ")" { return args })* {
+      return params.reduce(
+        (callee, args) => {
+          return crearNodo('llamada', { callee, args: args || [] });
+        },
+        callee
+      );
+    }
 
 // ===== Funciones Embebidas =====
 FuncionesEmbebidas
@@ -340,14 +359,16 @@ join
       return crearNodo('join', { array: id });
     }
 
+
 // ===== Funciones Embebidas =====
 parseInt
   = "parseInt" _ "(" _ exp:Expresion _ ")" {
       return crearNodo('parseInt', { exp });
     }
 
+
 parseFloat
-  = "parseFloat" _ "(" _ exp:Expresion _ ")" {
+  = "parsefloat" _ "(" _ exp:Expresion _ ")" {
       return crearNodo('parseFloat', { exp });
     }
 
@@ -369,17 +390,6 @@ toUpperCase
 typeOf 
   = "typeof"  _ exp:Expresion _  {
       return crearNodo('typeOf', { exp });
-    }
-
-// ===== Llamadas a funciones =====
-Llamada 
-  = callee:Numero _ params:("(" args:Argumentos? ")" { return args })* {
-      return params.reduce(
-        (callee, args) => {
-          return crearNodo('llamada', { callee, args: args || [] });
-        },
-        callee
-      );
     }
 
 // ===== Referencia a Variables =====
@@ -433,9 +443,21 @@ EscapeSequence
 Char
   = "'" char:. "'" { return crearNodo('char', { tipo: 'char', valor: char }); }
 
+// ===== Literales Null =====
+Literal
+  = Booleano
+  / Numero
+  / String
+  / Char
+  / "null" { return crearNodo('null', { tipo: 'null', valor: null }); }
+
 // ===== Tipos de datos permitidos =====
 Type 
   = "int" / "float" / "string" / "boolean" / "char" / "var" {  return text(); }
+
+// ===== Tipos de datos permitidos para funciones =====
+Type2 
+  = "int" / "float" / "string" / "boolean" / "char" { return text(); }
 
 // ===== Palabras reservadas =====
 Reserved 

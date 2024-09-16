@@ -20,7 +20,7 @@ export class Entorno {
      */
     setVariable(nombre, valor, tipo) {
         if (this.existeVariableLocal(nombre)) {
-            throw new Error(`Variable '${nombre}' ya definida en este entorno.`);
+            throw new Error(`variable '${nombre}' ya definida en este entorno.`);
         }
         this.valores[nombre] = valor;
         this.tipos[nombre] = tipo;

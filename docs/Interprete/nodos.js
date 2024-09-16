@@ -403,6 +403,55 @@ export class DeclaracionArray extends Expresion {
     }
 }
     
+export class Funcion extends Expresion {
+
+    /**
+    * @param {Object} options
+    * @param {string} options.tipoRetorno Tipo de retorno de la funcion
+ * @param {string} options.id Identificador de la funcion
+ * @param {string[]} options.params Parametros de la funcion
+ * @param {Bloque} options.cuerpo Cuerpo de la funcion
+    */
+    constructor({ tipoRetorno, id, params, cuerpo }) {
+        super();
+        
+        /**
+         * Tipo de retorno de la funcion
+         * @type {string}
+        */
+        this.tipoRetorno = tipoRetorno;
+
+
+        /**
+         * Identificador de la funcion
+         * @type {string}
+        */
+        this.id = id;
+
+
+        /**
+         * Parametros de la funcion
+         * @type {string[]}
+        */
+        this.params = params;
+
+
+        /**
+         * Cuerpo de la funcion
+         * @type {Bloque}
+        */
+        this.cuerpo = cuerpo;
+
+    }
+
+    /**
+     * @param {BaseVisitor} visitor
+     */
+    accept(visitor) {
+        return visitor.visitFuncion(this);
+    }
+}
+    
 export class ReferenciaVariable extends Expresion {
 
     /**
@@ -1242,4 +1291,4 @@ export class Llamada extends Expresion {
     }
 }
     
-export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, DeclaracionArray, ReferenciaVariable, Print, ExpresionStmt, ArrayAssign, ArrayAccess, Length, Asignacion, Ternario, ParseInt, ParseFloat, ToString, ToLowerCase, ToUpperCase, TypeOf, IndexOf, Join, Bloque, If, ElseIf, Switch, While, For, ForEach, Break, Continue, Return, Llamada }
+export default { Expresion, OperacionBinaria, OperacionUnaria, Agrupacion, Numero, Booleano, String, Char, Null, DeclaracionVariable, DeclaracionArray, Funcion, ReferenciaVariable, Print, ExpresionStmt, ArrayAssign, ArrayAccess, Length, Asignacion, Ternario, ParseInt, ParseFloat, ToString, ToLowerCase, ToUpperCase, TypeOf, IndexOf, Join, Bloque, If, ElseIf, Switch, While, For, ForEach, Break, Continue, Return, Llamada }

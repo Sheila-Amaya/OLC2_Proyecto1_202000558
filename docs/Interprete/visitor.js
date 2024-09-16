@@ -34,6 +34,9 @@
  * @typedef {import('./docs/Interprete/nodos.js').DeclaracionArray} DeclaracionArray
 
 
+ * @typedef {import('./docs/Interprete/nodos.js').Funcion} Funcion
+
+
  * @typedef {import('./docs/Interprete/nodos.js').ReferenciaVariable} ReferenciaVariable
 
 
@@ -220,6 +223,15 @@ export class BaseVisitor {
      */
     visitDeclaracionArray(node) {
         throw new Error('Metodo visitDeclaracionArray no implementado');
+    }
+    
+
+    /**
+     * @param {Funcion} node
+     * @returns {any}
+     */
+    visitFuncion(node) {
+        throw new Error('Metodo visitFuncion no implementado');
     }
     
 
