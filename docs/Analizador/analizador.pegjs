@@ -462,7 +462,8 @@ Type2
 // ===== Palabras reservadas =====
 Reserved 
   = "true" / "false" / "int" / "float" / "string" / "boolean" / "char" / "var" / "if" / "else" / "while" / "for" 
-  / "break" / "continue" / "return" / "null"
+  / "break" / "continue" / "return" / "null" / "switch" / "case" / "default" / "void" / "System" / "out" / "println" 
+  / "new" / "parseInt" / "parseFloat" / "toString" / "toLowerCase" / "toUpperCase" / "typeof" / "indexOf" / "join"
 
 // ===== Identificadores =====
 Identificador 
