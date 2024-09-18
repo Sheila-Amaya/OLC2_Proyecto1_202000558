@@ -100,7 +100,7 @@ function openFile(event) {
             };
             reader.readAsText(file);
         } else {
-            alert("Por favor selecciona un archivo con extensión .oak");
+            alert("Por favor selecciona un archivo con extension .oak");
         }
     }
 }
@@ -124,18 +124,24 @@ function executeCode() {
         clearConsole();
         const activeEditor = editors[activeTabId];
         const codigoFuente = activeEditor.getValue();
+
+        // limopiar tablas del localStorage
+        localStorage.removeItem('symbolTable');
+        localStorage.removeItem('errorTable');
+
         try {
             const sentencias = parse(codigoFuente);
             const interprete = new InterpreterVisitor();
 
-            localStorage.removeItem('symbolTable'); // Limpiar la tabla de símbolos
             sentencias.forEach(sentencia => {
                 try {
                     sentencia.accept(interprete);
                 } catch (error) {
                     logToConsole(`\nError: ${error.message} at line ${error.location?.start.line} column ${error.location?.start.column}`);
+                    addErrorToTable('Semantico', error.message, error.location?.start.line, error.location?.start.column);
                 }
             });
+
             logToConsole(interprete.salida);
 
             // Guardar la tabla de símbolos en localStorage
@@ -143,11 +149,21 @@ function executeCode() {
             localStorage.setItem('symbolTable', JSON.stringify(symbolTable));
 
         } catch (error) {
+            //  err. s
             logToConsole(`Error: ${error.message} at line ${error.location?.start.line} column ${error.location?.start.column}`);
+            addErrorToTable('Sintactico', error.message, error.location?.start.line, error.location?.start.column);
         }
     } else {
         alert("No hay ningun archivo abierto para ejecutar.");
     }
+}
+
+function addErrorToTable(tipo, descripcion, linea, columna) {
+    const errorTable = JSON.parse(localStorage.getItem('errorTable')) || [];
+    const numero = errorTable.length + 1;
+    const error = { numero, descripcion, linea, columna, tipo };
+    errorTable.push(error);
+    localStorage.setItem('errorTable', JSON.stringify(errorTable));
 }
 
 function clearConsole() {
